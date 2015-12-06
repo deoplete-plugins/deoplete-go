@@ -14,13 +14,13 @@ class Source(Base):
         self.is_bytepos = True
 
     def get_complete_api(self, findstart):
-        self.complete_api = self.vim.vars['deoplete#sources#go']
-        if self.complete_api == 'gocode':
+        complete_api = self.vim.vars['deoplete#sources#go']
+        if complete_api == 'gocode':
             return self.vim.call('gocomplete#Complete', findstart, 0)
-        elif self.complete_api == 'vim-go':
+        elif complete_api == 'vim-go':
             return self.vim.call('go#complete#Complete', findstart, 0)
         else:
-            return deoplete.util.error(self.vim, "g:deoplete#sources#go is 'gocode' or 'vim-go'")
+            return deoplete.util.error(self.vim, "g:deoplete#sources#go must be 'gocode' or 'vim-go'")
 
     def get_complete_position(self, context):
         return self.get_complete_api(1)
