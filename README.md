@@ -44,3 +44,14 @@ let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_completion_start_length = 0
 let g:deoplete#sources#go = 'vim-go'
 ```
+
+Todo:
+-----
+- [ ] Execute `gocode` binary instead of call vim function
+- [ ] Get and parse completion list of json format. such as `ycm`
+- [ ] Support Go stdlib package `import "***"` name completion
+ - Retain the static api text? or parse?
+- [ ] When there is no candidate infomation, deoplete will cause an error
+- [ ] Support fizzy matching
+- [ ] Parse included cgo (C,C++ language) headers
+ - `ctags` will be blocking deoplete
