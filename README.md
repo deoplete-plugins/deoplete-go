@@ -41,8 +41,16 @@ let g:python3_host_prog  = '/path/to/python3'
 
 " deoplete config
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_completion_start_length = 0
 let g:deoplete#sources#go = 'vim-go'
+```
+
+`deoplete` also `deoplete-go` will be `min_pattern_length = 0` and `rank = 100` set to default.  
+If you want to customize that variable, insert your `init.vim` after set `runtimepath`.  
+e.g. `rank` is `9999`, `min_pattern_length` is `0`,
+
+```vim
+call deoplete#custom#set('go', 'rank', 9999)
+call deoplete#custom#set('go', 'min_pattern_length', 0)
 ```
 
 Todo:
