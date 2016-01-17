@@ -29,20 +29,15 @@ Sample init.vim:
 ----------------
 
 ```vim
-" neocomplete like
-" https://github.com/Shougo/deoplete.nvim/blob/master/doc/deoplete.txt#L594-L599
-set completeopt+=noinsert
-
-" Disable auto selection
-set completeopt+=noselect
-
-" for neovim python-client
+" to point neovim to a specific python 3 interpreter
 let g:python3_host_prog  = '/path/to/python3'
 
 " deoplete config
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_completion_start_length = 0
+let g:deoplete#auto_completion_start_length = 1
 let g:deoplete#sources#go = 'vim-go'
+let g:deoplete#ignore_sources = {}
+let g:deoplete#ignore_sources.go = ['omni']
 ```
 
 Todo:
