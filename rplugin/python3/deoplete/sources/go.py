@@ -9,7 +9,6 @@ class Source(Base):
         self.name = 'go'
         self.mark = '[go]'
         self.filetypes = ['go']
-        self.rank = 100
         self.min_pattern_length = 0
         self.is_bytepos = True
 
