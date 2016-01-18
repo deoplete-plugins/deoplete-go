@@ -1,9 +1,7 @@
-deoplete-go
-=======
+# deoplete-go
 Go deoplete source for gocode and vim-go.
 
-Install:
---------
+## Install
 
 ```bash
 NeoBundle 'zchee/deoplete-go'
@@ -11,8 +9,7 @@ NeoBundle 'zchee/deoplete-go'
 Plug 'zchee/deoplete-go'
 ```
 
-Usage:
-------
+## Usage
 If you using the gocode, set
 
 ```vim
@@ -25,8 +22,7 @@ If you using the vim-go, set
 let g:deoplete#sources#go = 'vim-go'
 ```
 
-Sample init.vim:
-----------------
+## Sample init.vim
 
 ```vim
 " neocomplete like
@@ -52,6 +48,19 @@ e.g. `rank` is `9999`, `min_pattern_length` is `0`,
 call deoplete#custom#set('go', 'rank', 9999)
 call deoplete#custom#set('go', 'min_pattern_length', 0)
 ```
+
+## Why `deoplete` also `deoplete-go` are not use `omnifunc`?
+When deoplete call `omnifunc`, will block user interface a little bit.  
+That is specification of `vim` also `neovim`.  
+We can not call `omnifunc` asynchnously now.
+
+but, If we use `deoplete` source implementation, `deoplete` can get a dictionary completion word list asynchnously.  
+So, If `deoplete-go` (and other language `deoplete` source plugins) passes exactly the same as `omnifunc` dictionary word list to `deoplete`,  
+We do not need a `omnifunc`.
+
+The advantage of `deoplete` also `deoplete-go` is it.
+
+See also https://github.com/zchee/deoplete-go/issues/4#issuecomment-172412821 .  
 
 Todo:
 -----
