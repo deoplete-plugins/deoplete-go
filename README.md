@@ -36,6 +36,7 @@ If you using the vim-go, set
 let g:deoplete#sources#go = 'vim-go'
 ```
 
+
 ## Sample init.vim
 
 ```vim
@@ -53,6 +54,9 @@ let g:python3_host_prog  = '/path/to/python3'
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go = 'vim-go'
 ```
+
+
+## Settings
 
 `deoplete` and `deoplete-go` will be source settings to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'` set to default.  
 If you want to customize that variable, insert your `init.vim` after set `runtimepath`.  
