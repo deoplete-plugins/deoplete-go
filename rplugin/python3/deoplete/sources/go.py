@@ -9,7 +9,7 @@ class Source(Base):
         self.name = 'go'
         self.mark = '[go]'
         self.filetypes = ['go']
-        self.min_pattern_length = 0
+        self.input_pattern = '[^. \t0-9]\.\w*'
         self.is_bytepos = True
 
     def get_complete_api(self, findstart):
