@@ -1,5 +1,19 @@
 # deoplete-go
-Go deoplete source for gocode and vim-go.
+Go [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) source for [gocode](https://github.com/nsf/gocode) and [vim-go](https://github.com/fatih/vim-go).
+
+
+## Required
+
+### Neovim
+https://github.com/neovim/neovim/
+
+### deoplete.nvim
+https://github.com/Shougo/deoplete.nvim
+
+### gocode or vim-go
+https://github.com/nsf/gocode
+https://github.com/fatih/vim-go
+
 
 ## Install
 
