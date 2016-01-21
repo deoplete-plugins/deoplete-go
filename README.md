@@ -62,7 +62,24 @@ e.g. `rank` is `9999`,
 call deoplete#custom#set('go', 'rank', 9999)
 ```
 
-If you want to other settings for `deoplete-go`, See `deoplete.nvim` docs.
+If you want to other settings for `deoplete-go`, available setting values is
+
+| value                   | `deoplete.nvim` default                   | `deoplete-go` defalut       |
+|-------------------------|-------------------------------------------|-----------------------------|
+| `name`                  | -                                         | go                          |
+| `mark`                  | -                                         | `[go]`                      |
+| `filetype`              | all filetypes                             | go                          |
+| `rank`                  | `100`                                     | -                           |
+| `min_pattern_length`    | `g:deoplete#auto_completion_start_length` | -                           |
+| `input-pattern`         | -                                         | `'[^. \t0-9]\.\w*'`         |
+| `is_byteopts`           | `False`                                   | `True`                      |
+| `matchers`              | `deoplete-filter-matcher_default`         | -                           |
+| `sorters`               | `deoplete-filter-sorter_default`          | -                           |
+| `converters`            | `deoplete-filter-converter_default`       | -                           |
+| `get_complete_position` | `g:deoplete#keyword_patterns`             | `gocomplete#Complete(1, 0)` |
+| `gather_candidates`     | -                                         | `gocomplete#Complete(1, 0)` |
+
+See also `deoplete.nvim` docs.
 
 https://github.com/Shougo/deoplete.nvim/blob/master/doc/deoplete.txt#L460
 
