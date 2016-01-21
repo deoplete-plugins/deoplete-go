@@ -89,11 +89,7 @@ and available setting values,
 | `get_complete_position` | `g:deoplete#keyword_patterns`             | `gocomplete#Complete(1, 0)` |
 | `gather_candidates`     | -                                         | `gocomplete#Complete(1, 0)` |
 
-See also `deoplete.nvim` docs.
-
-https://github.com/Shougo/deoplete.nvim/blob/master/doc/deoplete.txt#L460
-
-or
+See also 
 
 ```vim
 :help deoplete-source-attributes
