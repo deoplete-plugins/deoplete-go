@@ -54,14 +54,24 @@ let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go = 'vim-go'
 ```
 
-`deoplete` also `deoplete-go` will be `min_pattern_length = 0` and `rank = 100` set to default.  
+`deoplete` and `deoplete-go` will be source settings to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'` set to default.  
 If you want to customize that variable, insert your `init.vim` after set `runtimepath`.  
-e.g. `rank` is `9999`, `min_pattern_length` is `1`,
+e.g. `rank` is `9999`,
 
 ```vim
 call deoplete#custom#set('go', 'rank', 9999)
-call deoplete#custom#set('go', 'min_pattern_length', 1)
 ```
+
+If you want to other settings for `deoplete-go`, See `deoplete.nvim` docs.
+
+https://github.com/Shougo/deoplete.nvim/blob/master/doc/deoplete.txt#L460
+
+or
+
+```vim
+:help deoplete-source-attributes
+```
+
 
 ## Why `deoplete` also `deoplete-go` are not use `omnifunc`?
 When deoplete call `omnifunc`, will block user interface a little bit.  
