@@ -74,7 +74,7 @@ call deoplete#custom#set('go', 'min_pattern_length', 1000)
 
 and available setting values,
 
-| value                   | `deoplete.nvim` default                   | `deoplete-go` defalut       |
+| value                   | `deoplete.nvim` default                   | `deoplete-go` default       |
 |-------------------------|-------------------------------------------|-----------------------------|
 | `name`                  | -                                         | go                          |
 | `mark`                  | -                                         | `[go]`                      |
