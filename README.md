@@ -66,7 +66,13 @@ e.g. `rank` is `9999`,
 call deoplete#custom#set('go', 'rank', 9999)
 ```
 
-If you want to other settings for `deoplete-go`, available setting values is
+If you want to the same motion as the `omnifunc`, set
+
+```vim
+call deoplete#custom#set('go', 'min_pattern_length', 1000)
+```
+
+and available setting values,
 
 | value                   | `deoplete.nvim` default                   | `deoplete-go` defalut       |
 |-------------------------|-------------------------------------------|-----------------------------|
