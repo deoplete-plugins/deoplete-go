@@ -87,7 +87,7 @@ and available setting values,
 | `sorters`               | `deoplete-filter-sorter_default`          | -                           |
 | `converters`            | `deoplete-filter-converter_default`       | -                           |
 | `get_complete_position` | `g:deoplete#keyword_patterns`             | `gocomplete#Complete(1, 0)` |
-| `gather_candidates`     | -                                         | `gocomplete#Complete(1, 0)` |
+| `gather_candidates`     | -                                         | `gocomplete#Complete(0, 0)` |
 
 See also 
 
