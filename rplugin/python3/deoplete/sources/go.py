@@ -14,8 +14,7 @@ class Source(Base):
         self.name = 'go'
         self.mark = '[go]'
         self.filetypes = ['go']
-        self.input_pattern = '[^. \t0-9]\.\w*'
-        self.is_bytepos = True
+        self.input_pattern = r'[^. \t0-9]\.\w*'
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$', context['input'])
