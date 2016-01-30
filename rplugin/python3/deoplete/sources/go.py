@@ -41,27 +41,31 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = json.loads(stdout_data.decode('utf-8'))
 
+        out = []
+        for complete in result[1]:
+            word = complete['name']
+            class_type = complete['class']
+
+            if class_type == 'package':
+                word += '.'
+            elif class_type == 'func':
+                word += '('
+            elif complete['type'] == '[]string':
+                word += '['
+
+            out.append(dict(word=word,
+                            abbr=complete['name'],
+                            kind='{:5}'.format(class_type) +
+                            complete['type'].replace('func', ''),
+                            info=complete['type'],
+                            icase=1,
+                            dup=1
+                            ))
+
         try:
-            return [self.ConvertCompletionData(x) for x in result[1]]
+            return out
         except Exception:
             return []
-
-    def ConvertCompletionData(self, complete):
-        out = {
-            'word': complete['name']
-        }
-        out['kind'] = complete['type']
-        out['abbr'] = complete['class'] + ' ' + complete['name']
-        out['info'] = complete['type']
-        if complete['class'] == 'package':
-            out['word'] += '.'
-        elif complete['class'] == 'func':
-            out['word'] += '('
-            out['kind'].strip(complete['class'])
-        elif complete['type'] == '[]string':
-            out['word'] += '['
-
-        return out
 
     def GoCodeBinary(self):
         try:
