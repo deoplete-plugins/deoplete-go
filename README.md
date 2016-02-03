@@ -1,5 +1,5 @@
 # deoplete-go
-Go [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) source for [gocode](https://github.com/nsf/gocode) and [vim-go](https://github.com/fatih/vim-go).
+Go [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) source for [gocode](https://github.com/nsf/gocode).
 
 
 ## Required
@@ -10,9 +10,8 @@ https://github.com/neovim/neovim/
 ### deoplete.nvim
 https://github.com/Shougo/deoplete.nvim
 
-### gocode or vim-go
+### gocode
 https://github.com/nsf/gocode
-https://github.com/fatih/vim-go
 
 
 ## Install
@@ -24,16 +23,13 @@ Plug 'zchee/deoplete-go'
 ```
 
 ## Usage
-If you using the gocode, set
+`deoplete-go` calls the `gocode` to directly.  
+By default, the first `gocode` binary in the `$PATH`.
+
+If you want to use a different `gocode`, set
 
 ```vim
-let g:deoplete#sources#go = 'gocode'
-```
-
-If you using the vim-go, set
-
-```vim
-let g:deoplete#sources#go = 'vim-go'
+let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
 ```
 
 
@@ -52,7 +48,6 @@ let g:python3_host_prog  = '/path/to/python3'
 
 " deoplete config
 let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#go = 'vim-go'
 ```
 
 
@@ -86,8 +81,6 @@ and available setting values,
 | `matchers`              | `deoplete-filter-matcher_default`         | -                           |
 | `sorters`               | `deoplete-filter-sorter_default`          | -                           |
 | `converters`            | `deoplete-filter-converter_default`       | -                           |
-| `get_complete_position` | `g:deoplete#keyword_patterns`             | `gocomplete#Complete(1, 0)` |
-| `gather_candidates`     | -                                         | `gocomplete#Complete(0, 0)` |
 
 See also 
 
@@ -107,17 +100,11 @@ The advantage of `deoplete` also `deoplete-go` is it.
 
 See also https://github.com/zchee/deoplete-go/issues/4#issuecomment-172412821 .  
 
-...BTW, `deoplete-go` is not implements this TODO.
-
-> Execute `gocode` binary instead of call vim function
-
-Perfect asynchronous will be done by implementing this.  
-Please wait a little :)
 
 Todo:
 -----
-- [ ] Execute `gocode` binary instead of call vim function
-- [ ] Get and parse completion list of json format. such as `ycm`
+- [x] Execute `gocode` binary instead of call vim function
+- [x] Get and parse completion list of json format. such as `ycm`
 - [ ] Support Go stdlib package `import "***"` name completion
  - Retain the static api text? or parse?
 - [ ] When there is no candidate infomation, deoplete will cause an error
