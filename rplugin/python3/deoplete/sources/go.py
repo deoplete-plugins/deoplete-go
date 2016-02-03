@@ -21,7 +21,8 @@ class Source(Base):
         return m.start() if m else -1
 
     def gather_candidates(self, context):
-        line, column = self.vim.current.window.cursor
+        line = self.vim.current.window.cursor[0]
+        column = context['complete_position']
 
         buf = self.vim.current.buffer
         buf_path = buf.name
