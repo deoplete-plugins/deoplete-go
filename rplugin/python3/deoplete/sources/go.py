@@ -36,33 +36,34 @@ class Source(Base):
                                     str(offset)],
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+                                   stderr=subprocess.PIPE,
+                                   start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
         result = json.loads(stdout_data.decode('utf-8'))
 
         out = []
-        for complete in result[1]:
-            word = complete['name']
-            class_type = complete['class']
-
-            if class_type == 'package':
-                word += '.'
-            elif class_type == 'func':
-                word += '('
-            elif complete['type'] == '[]string':
-                word += '['
-
-            out.append(dict(word=word,
-                            abbr=complete['name'],
-                            kind='{:5}'.format(class_type) +
-                            complete['type'].replace('func', ''),
-                            info=complete['type'],
-                            icase=1,
-                            dup=1
-                            ))
-
         try:
+            for complete in result[1]:
+                word = complete['name']
+                class_type = complete['class']
+
+                if class_type == 'package':
+                    word += '.'
+                elif class_type == 'func':
+                    word += '('
+                elif complete['type'] == '[]string':
+                    word += '['
+
+                out.append(dict(word=word,
+                                abbr=complete['name'],
+                                kind='{:5}'.format(class_type) +
+                                complete['type'].replace('func', ''),
+                                info=complete['type'],
+                                icase=1,
+                                dup=1
+                                ))
+
             return out
         except Exception:
             return []
