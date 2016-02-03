@@ -20,14 +20,13 @@ class Source(Base):
         m = re.search(r'\w*$', context['input'])
         return m.start() if m else -1
 
-    # Json output and convert vim syntax
     def gather_candidates(self, context):
-        source = '\n'.join(self.vim.current.buffer).encode()
-        buf_path = self.vim.current.buffer.name
-        # TODO(zchee): Convert python code
-        offset = self.vim.eval(
-            "line2byte(line('.')) + (col('.')-2)"
-        )
+        line, column = self.vim.current.window.cursor
+
+        buf = self.vim.current.buffer
+        buf_path = buf.name
+        offset = self.ByteOffset(buf, line, column)
+        source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
                                     '-f=json',
@@ -67,6 +66,19 @@ class Source(Base):
             return out
         except Exception:
             return []
+
+    def ByteOffset(self, buf, line, column):
+        offset = -1
+        cursor_line = 1
+        if line == 1:
+            return 1
+        else:
+            for i, byte in enumerate(buf):
+                if cursor_line == line:
+                    break
+                offset += len(str(byte).expandtabs(tabsize=4))
+                cursor_line += 1
+            return offset + (column - 1)
 
     def GoCodeBinary(self):
         try:
