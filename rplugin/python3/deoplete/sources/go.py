@@ -26,7 +26,7 @@ class Source(Base):
 
         buf = self.vim.current.buffer
         buf_path = buf.name
-        offset = self.ByteOffset(buf, line, column)
+        offset = self.ByteOffset(buf, line) + (column - 1)
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
@@ -68,18 +68,19 @@ class Source(Base):
         except Exception:
             return []
 
-    def ByteOffset(self, buf, line, column):
-        offset = -1
+    def ByteOffset(self, buf, line):
+        offset = 0
         cursor_line = 1
         if line == 1:
             return 1
-        else:
-            for i, byte in enumerate(buf):
-                if cursor_line == line:
-                    break
-                offset += len(str(byte).expandtabs(tabsize=4))
+        for i, byte in enumerate(buf):
+            if cursor_line == line:
+                offset += 1
+                break
+            else:
+                offset += (len(str(byte)) + 1)
                 cursor_line += 1
-            return offset + (column - 1)
+        return offset
 
     def GoCodeBinary(self):
         try:
