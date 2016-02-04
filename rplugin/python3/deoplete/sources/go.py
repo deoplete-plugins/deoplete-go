@@ -52,7 +52,7 @@ class Source(Base):
                     word += '.'
                 elif class_type == 'func':
                     word += '('
-                elif complete['type'] == '[]string':
+                elif re.match(r'\[\]', complete['type']):
                     word += '['
 
                 out.append(dict(word=word,
