@@ -22,10 +22,25 @@ NeoBundle 'zchee/deoplete-go'
 Plug 'zchee/deoplete-go'
 ```
 
-## Usage
-`deoplete-go` calls the `gocode` to directly.  
-By default, the first `gocode` binary in the `$PATH`.
+## Settings
 
+### Class sorting
+By Default, completion list is the sort order of gocode.  
+If you want to change to the arbitrary sort order, set the order in `deoplete#sources#go#sort_class`.  
+
+Available values is `package`, `func`, `type`, `var`, `const`.  
+`deoplete#sources#go#sort_class` **value must be include all class.**
+
+e.g.
+```vim
+let deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+```
+
+Try to test in `os` package.
+
+### `gocode` binary
+`deoplete-go` will directly call the `gocode`.  
+By default, the first `gocode` binary in the `$PATH`.  
 If you want to use a different `gocode`, set
 
 ```vim
