@@ -1,7 +1,15 @@
-import json
 import os
 import re
 import subprocess
+import sys
+
+try:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    ujson_dir = os.path.dirname(current_dir)
+    sys.path.insert(0, ujson_dir)
+    import ujson as json
+except ImportError:
+    import json
 
 from .base import Base
 from deoplete.util import charpos2bytepos
