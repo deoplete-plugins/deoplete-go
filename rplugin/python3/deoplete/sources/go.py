@@ -62,19 +62,21 @@ class Source(Base):
         try:
             out = []
             for complete in result[1]:
-                word = complete['name']
                 _class = complete['class']
+                word = complete['name']
+                abbr = '{:<5}'.format(_class) + complete['name']
+                info = complete['type']
 
                 if _class == 'package':
                     word += '.'
+                    abbr = _class + ' ' + complete['name']
                 elif _class == 'func':
-                    word += '('
+                    word = word + '('
+                    abbr += str(info).replace('func', '')
 
                 candidates = dict(word=word,
-                                  abbr=complete['name'],
-                                  kind='{:5}'.format(_class) +
-                                  complete['type'].replace('func', ''),
-                                  info=complete['type'],
+                                  abbr=abbr,
+                                  info=info,
                                   dup=1
                                   )
                 if self.sort_class == None:
