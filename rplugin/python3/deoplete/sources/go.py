@@ -6,6 +6,7 @@ import subprocess
 from .base import Base
 from deoplete.util import charpos2bytepos
 
+
 class Source(Base):
 
     def __init__(self, vim):
@@ -68,8 +69,6 @@ class Source(Base):
                     word += '.'
                 elif _class == 'func':
                     word += '('
-                elif re.match(r'\[\]', complete['type']):
-                    word += '['
 
                 candidates = dict(word=word,
                                   abbr=complete['name'],
