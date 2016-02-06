@@ -4,7 +4,7 @@ import re
 import subprocess
 
 from .base import Base
-
+from deoplete.util import charpos2bytepos
 
 class Source(Base):
 
@@ -31,7 +31,8 @@ class Source(Base):
         column = context['complete_position']
 
         buf = self.vim.current.buffer
-        offset = self.ByteOffset(buf, line) + (column - 1)
+        offset = self.vim.call('line2byte', line) + charpos2bytepos(
+            self.vim, context['input'][: column], column)
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
@@ -91,20 +92,6 @@ class Source(Base):
             return out
         except Exception:
             return []
-
-    def ByteOffset(self, buf, line):
-        offset = 0
-        cursor_line = 1
-        if line == 1:
-            return 1
-        for i, byte in enumerate(buf):
-            if cursor_line == line:
-                offset += 1
-                break
-            else:
-                offset += (len(str(byte)) + 1)
-                cursor_line += 1
-        return offset
 
     def GoCodeBinary(self):
         try:
