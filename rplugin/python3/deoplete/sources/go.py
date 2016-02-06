@@ -3,6 +3,10 @@ import re
 import subprocess
 import sys
 
+from .base import Base
+
+from deoplete.util import charpos2bytepos
+
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     ujson_dir = os.path.dirname(current_dir)
@@ -10,9 +14,6 @@ try:
     from ujson import loads
 except ImportError:
     import json
-
-from .base import Base
-from deoplete.util import charpos2bytepos
 
 
 class Source(Base):
@@ -40,8 +41,8 @@ class Source(Base):
         column = context['complete_position']
 
         buf = self.vim.current.buffer
-        offset = self.vim.call('line2byte', line) + charpos2bytepos(
-            self.vim, context['input'][: column], column)
+        offset = self.vim.call('line2byte', line) + \
+            charpos2bytepos(self.vim, context['input'][: column], column)
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
@@ -57,7 +58,7 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
 
-        if not self.sort_class == None:
+        if self.sort_class is not None:
             # TODO(zchee): Why not work with this?
             #              class_dict = {}.fromkeys(self.sort_class, [])
             class_dict = {
@@ -87,13 +88,13 @@ class Source(Base):
                                   info=info,
                                   dup=1
                                   )
-                if self.sort_class == None:
+                if self.sort_class is None:
                     out.append(candidates)
                 else:
                     class_dict[_class].append(candidates)
 
             # append with sort by complete['class']
-            if not self.sort_class == None:
+            if self.sort_class is not None:
                 for c in self.sort_class:
                     for x in class_dict[c]:
                         out.append(x)
