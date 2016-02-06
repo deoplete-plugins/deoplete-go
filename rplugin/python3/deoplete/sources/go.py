@@ -7,7 +7,7 @@ try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     ujson_dir = os.path.dirname(current_dir)
     sys.path.insert(0, ujson_dir)
-    import ujson as json
+    from ujson import loads
 except ImportError:
     import json
 
@@ -55,7 +55,7 @@ class Source(Base):
                                    start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
-        result = json.loads(stdout_data.decode())
+        result = loads(stdout_data.decode())
 
         if not self.sort_class == None:
             # TODO(zchee): Why not work with this?
