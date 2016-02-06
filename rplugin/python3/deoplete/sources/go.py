@@ -4,7 +4,7 @@ import re
 import subprocess
 
 from .base import Base
-
+from deoplete.util import charpos2bytepos
 
 class Source(Base):
 
@@ -15,6 +15,7 @@ class Source(Base):
         self.mark = '[go]'
         self.filetypes = ['go']
         self.input_pattern = r'[^. \t0-9]\.\w*'
+        self.rank = 500
 
         try:
             self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
@@ -30,14 +31,14 @@ class Source(Base):
         column = context['complete_position']
 
         buf = self.vim.current.buffer
-        buf_path = buf.name
-        offset = self.ByteOffset(buf, line) + (column - 1)
+        offset = self.vim.call('line2byte', line) + charpos2bytepos(
+            self.vim, context['input'][: column], column)
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
                                     '-f=json',
                                     'autocomplete',
-                                    buf_path,
+                                    buf.name,
                                     str(offset)],
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE,
@@ -45,9 +46,8 @@ class Source(Base):
                                    start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
-        result = json.loads(stdout_data.decode('utf-8'))
+        result = json.loads(stdout_data.decode())
 
-        out = []
         if not self.sort_class == None:
             # TODO(zchee): Why not work with this?
             #              class_dict = {}.fromkeys(self.sort_class, [])
@@ -59,6 +59,7 @@ class Source(Base):
                 'const': [],
             }
         try:
+            out = []
             for complete in result[1]:
                 word = complete['name']
                 _class = complete['class']
@@ -75,7 +76,6 @@ class Source(Base):
                                   kind='{:5}'.format(_class) +
                                   complete['type'].replace('func', ''),
                                   info=complete['type'],
-                                  icase=1,
                                   dup=1
                                   )
                 if self.sort_class == None:
@@ -92,20 +92,6 @@ class Source(Base):
             return out
         except Exception:
             return []
-
-    def ByteOffset(self, buf, line):
-        offset = 0
-        cursor_line = 1
-        if line == 1:
-            return 1
-        for i, byte in enumerate(buf):
-            if cursor_line == line:
-                offset += 1
-                break
-            else:
-                offset += (len(str(byte)) + 1)
-                cursor_line += 1
-        return offset
 
     def GoCodeBinary(self):
         try:
