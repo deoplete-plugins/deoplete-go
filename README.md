@@ -16,10 +16,10 @@ https://github.com/nsf/gocode
 
 ## Install
 
-```bash
-NeoBundle 'zchee/deoplete-go'
-# or
-Plug 'zchee/deoplete-go'
+```vim
+NeoBundle 'zchee/deoplete-go', {'build': {'unix': 'make'}}
+" or
+Plug 'zchee/deoplete-go', { 'do': 'make'}
 ```
 
 ## Settings
