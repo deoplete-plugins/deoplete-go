@@ -26,6 +26,8 @@ class Source(Base):
         self.filetypes = ['go']
         self.input_pattern = r'[^. \t0-9]\.\w*'
         self.rank = 500
+        self.align_class = self.vim.vars['deoplete#sources#go#align_class']
+        self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
 
         try:
             self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
@@ -42,7 +44,7 @@ class Source(Base):
 
         buf = self.vim.current.buffer
         offset = self.vim.call('line2byte', line) + \
-            charpos2bytepos(self.vim, context['input'][: column], column)
+            charpos2bytepos(self.vim, context['input'][: column], column) - 1
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
@@ -50,10 +52,10 @@ class Source(Base):
                                     'autocomplete',
                                     buf.name,
                                     str(offset)],
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   start_new_session=True)
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
@@ -73,15 +75,20 @@ class Source(Base):
             for complete in result[1]:
                 _class = complete['class']
                 word = complete['name']
-                abbr = '{:<5}'.format(_class) + complete['name']
                 info = complete['type']
 
-                if _class == 'package':
+                if _class != "package" and self.align_class:
+                    abbr = '{:<6}'.format(_class) + complete['name']
+                else:
+                    abbr = _class + ' ' + word
+
+                if _class == 'package' and self.package_dot:
                     word += '.'
-                    abbr = _class + ' ' + complete['name']
-                elif _class == 'func':
+                if _class == 'func':
                     word = word + '('
                     abbr += str(info).replace('func', '')
+                elif _class in ('type', 'var'):
+                    abbr += ' ' + complete['type']
 
                 candidates = dict(word=word,
                                   abbr=abbr,

@@ -24,19 +24,32 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 ## Settings
 
-### Class sorting
-By Default, completion list is the sort order of gocode.  
-If you want to change to the arbitrary sort order, set the order in `deoplete#sources#go#sort_class`.  
+### Class Aligning
+By default the classes (var, func, type, const) are not aligned in the popup menu.
 
-Available values is `package`, `func`, `type`, `var`, `const`.  
-`deoplete#sources#go#sort_class` **value must be include all class.**
+First is unaligned, second is aligned.
+
+![Unaligned vs Aligned classes](images/align_class.png)
+
+If you would like them aligned just set:
+
+```vim
+let g:deoplete#sources#go#align_class = 1
+```
+
+### Class Sorting
+By befault, the completion list is in the sort order of gocode.  
+If you want to change it to an arbitrary order, set it in `g:deoplete#sources#go#sort_class`.  
+
+Available values are `package`, `func`, `type`, `var`, `const`.  
+`g:deoplete#sources#go#sort_class` **value must include all class.**
 
 e.g.
 ```vim
-let deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 ```
 
-Try to test in `os` package.
+Test it in the `os` package.
 
 ### `gocode` binary
 `deoplete-go` will directly call the `gocode`.  
@@ -45,6 +58,13 @@ If you want to use a different `gocode`, set
 
 ```vim
 let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
+```
+
+### Package Period
+By default no period is inserted after a package name. If you would prefer adding a period then set:
+
+```vim
+let g:deoplete#sources#go#package_dot = 1
 ```
 
 
@@ -66,23 +86,17 @@ let g:deoplete#enable_at_startup = 1
 ```
 
 
-## Settings
+## Deoplete Settings
 
-`deoplete` and `deoplete-go` will be source settings to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'` set to default.  
-If you want to customize that variable, insert your `init.vim` after set `runtimepath`.  
+`deoplete-go` sets the source settings to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'`by default.  
+If you want to customize those variables, insert the following into your `init.vim` after setting `runtimepath`.  
 e.g. `rank` is `9999`,
 
 ```vim
 call deoplete#custom#set('go', 'rank', 9999)
 ```
 
-If you want to the same motion as the `omnifunc`, set
-
-```vim
-call deoplete#custom#set('go', 'min_pattern_length', 1000)
-```
-
-and available setting values,
+Available setting values
 
 | value                   | `deoplete.nvim` default                   | `deoplete-go` default       |
 |-------------------------|-------------------------------------------|-----------------------------|
@@ -97,7 +111,7 @@ and available setting values,
 | `sorters`               | `deoplete-filter-sorter_default`          | -                           |
 | `converters`            | `deoplete-filter-converter_default`       | -                           |
 
-See also 
+Also, see 
 
 ```vim
 :help deoplete-source-attributes
@@ -105,15 +119,15 @@ See also
 
 
 ## Why `deoplete` also `deoplete-go` are not use `omnifunc`?
-When deoplete call `omnifunc`, will block user interface a little bit.  
-That is specification of `vim` also `neovim`.  
-We can not call `omnifunc` asynchnously now.
+When deoplete calls `omnifunc`, it blocks the user interface a little bit.  
+This is a specification of `vim` and also `neovim`.  
+We can not call `omnifunc` asynchronously.
 
-If we use `deoplete` source implementation, `deoplete` can get a dictionary completion word list asynchnously.  
-So, If `deoplete-go` (and other language `deoplete` source plugins) passes exactly the same as `omnifunc` dictionary word list to `deoplete`, We do not need a `omnifunc`.
-The advantage of `deoplete` also `deoplete-go` is it.
+If we use the `deoplete` source implementation, `deoplete` can get a dictionary completion word list asynchronously.  
+If `deoplete-go` (and other `deoplete` source plugins) pass exactly the same dictionary word list as `omnifunc` to `deoplete`, we do not need a `omnifunc`.
+This is the advantage of this plugin.
 
-See also https://github.com/zchee/deoplete-go/issues/4#issuecomment-172412821 .  
+Also, see https://github.com/zchee/deoplete-go/issues/4#issuecomment-172412821  
 
 
 Todo:
