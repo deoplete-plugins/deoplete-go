@@ -118,7 +118,7 @@ Also, see
 ```
 
 
-## Why `deoplete` also `deoplete-go` are not use `omnifunc`?
+## Why do `deoplete` and `deoplete-go` not use `omnifunc`?
 When deoplete calls `omnifunc`, it blocks the user interface a little bit.  
 This is a specification of `vim` and also `neovim`.  
 We can not call `omnifunc` asynchronously.
