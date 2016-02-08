@@ -42,14 +42,14 @@ By befault, the completion list is in the sort order of gocode.
 If you want to change it to an arbitrary order, set it in `g:deoplete#sources#go#sort_class`.
 
 Available values are `package`, `func`, `type`, `var`, `const`.  
-If you do not include any value, will be always hidden in the completion list.
+If you do not include a value, it will always be hidden in the completion list.
 
 e.g.
 ```vim
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 ```
 
-Test it in the `os` package.
+Test it with the `os` package.
 
 ### `gocode` binary
 `deoplete-go` will directly call `gocode`.  
