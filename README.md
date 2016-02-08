@@ -52,9 +52,9 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 Test it in the `os` package.
 
 ### `gocode` binary
-`deoplete-go` will directly call the `gocode`.  
-By default, the first `gocode` binary in the `$PATH`.  
-If you want to use a different `gocode`, set
+`deoplete-go` will directly call `gocode`.  
+By default, `$PATH` is used to find the gocode binary.
+If you want to use a different binary, set
 
 ```vim
 let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
@@ -78,35 +78,34 @@ set completeopt+=noinsert
 " Disable auto selection
 set completeopt+=noselect
 
-" for neovim python-client
+" Path to python interpreter for neovim
 let g:python3_host_prog  = '/path/to/python3'
 
-" deoplete config
 let g:deoplete#enable_at_startup = 1
 ```
 
 
 ## Deoplete Settings
 
-`deoplete-go` sets the source settings to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'`by default.  
+The source settings are by default set to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'`.  
 If you want to customize those variables, insert the following into your `init.vim` after setting `runtimepath`.  
-e.g. `rank` is `9999`,
+e.g. if you want the `rank = 9999`,
 
 ```vim
 call deoplete#custom#set('go', 'rank', 9999)
 ```
 
-Available setting values
+Available settings and their corresponding values
 
-| value                   | `deoplete.nvim` default                   | `deoplete-go` default       |
+| setting                 | `deoplete.nvim` default                   | `deoplete-go` default       |
 |-------------------------|-------------------------------------------|-----------------------------|
 | `name`                  | -                                         | go                          |
 | `mark`                  | -                                         | `[go]`                      |
 | `filetype`              | all filetypes                             | go                          |
-| `rank`                  | `100`                                     | -                           |
+| `rank`                  | `100`                                     | 500                         |
 | `min_pattern_length`    | `g:deoplete#auto_completion_start_length` | -                           |
 | `input-pattern`         | -                                         | `'[^. \t0-9]\.\w*'`         |
-| `is_byteopts`           | `False`                                   | `True`                      |
+| `is_byteopts`           | `False`                                   | -                           |
 | `matchers`              | `deoplete-filter-matcher_default`         | -                           |
 | `sorters`               | `deoplete-filter-sorter_default`          | -                           |
 | `converters`            | `deoplete-filter-converter_default`       | -                           |
@@ -116,18 +115,6 @@ Also, see
 ```vim
 :help deoplete-source-attributes
 ```
-
-
-## Why do `deoplete` and `deoplete-go` not use `omnifunc`?
-When deoplete calls `omnifunc`, it blocks the user interface a little bit.  
-This is a specification of `vim` and also `neovim`.  
-We can not call `omnifunc` asynchronously.
-
-If we use the `deoplete` source implementation, `deoplete` can get a dictionary completion word list asynchronously.  
-If `deoplete-go` (and other `deoplete` source plugins) pass exactly the same dictionary word list as `omnifunc` to `deoplete`, we do not need a `omnifunc`.
-This is the advantage of this plugin.
-
-Also, see https://github.com/zchee/deoplete-go/issues/4#issuecomment-172412821  
 
 
 Todo:
