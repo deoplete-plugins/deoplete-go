@@ -6,6 +6,7 @@ import sys
 from .base import Base
 
 from deoplete.util import charpos2bytepos
+from deoplete.util import error
 
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +14,7 @@ try:
     sys.path.insert(0, ujson_dir)
     from ujson import loads
 except ImportError:
-    import json
+    from json import loads
 
 
 class Source(Base):
@@ -27,9 +28,10 @@ class Source(Base):
         self.input_pattern = r'[^. \t0-9]\.\w*'
         self.rank = 500
 
-        self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
         self.align_class = self.vim.vars['deoplete#sources#go#align_class']
+        self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
         self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
+        self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$', context['input'])
@@ -57,7 +59,7 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
 
-        if self.sort_class is not []:
+        if not self.sort_class == []:
             # TODO(zchee): Why not work with this?
             #              class_dict = {}.fromkeys(self.sort_class, [])
             class_dict = {
@@ -69,23 +71,24 @@ class Source(Base):
             }
         try:
             out = []
+            sep = ' '
             for complete in result[1]:
                 _class = complete['class']
                 word = complete['name']
                 info = complete['type']
 
-                if _class != "package" and self.align_class:
-                    abbr = '{:<6}'.format(_class) + complete['name']
+                if not _class == 'package' and self.align_class:
+                    abbr = '{:<6}'.format(_class) + word
                 else:
-                    abbr = _class + ' ' + word
+                    abbr = _class + sep + word
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
                 if _class == 'func':
                     word = word + '('
-                    abbr += str(info).replace('func', '')
+                    abbr += str(info).strip('func')
                 elif _class in ('type', 'var'):
-                    abbr += ' ' + complete['type']
+                    abbr += sep + info
 
                 candidates = dict(word=word,
                                   abbr=abbr,
@@ -109,12 +112,10 @@ class Source(Base):
 
     def GoCodeBinary(self):
         try:
-            binary_path = self.vim.vars['deoplete#sources#go#gocode_binary']
-            if binary_path:
-                if os.path.isfile(binary_path):
-                    return binary_path
-                else:
-                    return None
+            if os.path.isfile(self.gocode_binary):
+                return self.gocode_binary
+            else:
+                raise
         except Exception:
             return self.FindBinaryPath('gocode')
 
@@ -132,4 +133,4 @@ class Source(Base):
                 binary = os.path.join(path, cmd)
                 if is_exec(binary):
                     return binary
-        return None
+        return error(self.vim, 'gocode binary not found')
