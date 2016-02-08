@@ -98,7 +98,7 @@ class Source(Base):
                     class_dict[_class].append(candidates)
 
             # append with sort by complete['class']
-            if self.sort_class == []:
+            if not self.sort_class == []:
                 for c in self.sort_class:
                     for x in class_dict[c]:
                         out.append(x)
