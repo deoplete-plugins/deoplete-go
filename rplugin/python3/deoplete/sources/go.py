@@ -57,7 +57,7 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
 
-        if self.sort_class is not None:
+        if self.sort_class is not []:
             # TODO(zchee): Why not work with this?
             #              class_dict = {}.fromkeys(self.sort_class, [])
             class_dict = {
@@ -92,13 +92,13 @@ class Source(Base):
                                   info=info,
                                   dup=1
                                   )
-                if self.sort_class is None:
+                if self.sort_class == []:
                     out.append(candidates)
                 else:
                     class_dict[_class].append(candidates)
 
             # append with sort by complete['class']
-            if self.sort_class is not None:
+            if self.sort_class == []:
                 for c in self.sort_class:
                     for x in class_dict[c]:
                         out.append(x)
