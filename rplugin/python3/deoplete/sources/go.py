@@ -26,13 +26,10 @@ class Source(Base):
         self.filetypes = ['go']
         self.input_pattern = r'[^. \t0-9]\.\w*'
         self.rank = 500
+
+        self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
         self.align_class = self.vim.vars['deoplete#sources#go#align_class']
         self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
-
-        try:
-            self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
-        except Exception:
-            self.sort_class = None
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$', context['input'])
@@ -52,10 +49,10 @@ class Source(Base):
                                     'autocomplete',
                                     buf.name,
                                     str(offset)],
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    start_new_session=True)
+                                   stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())

@@ -10,3 +10,7 @@ endif
 if !exists("g:deoplete#sources#go#package_dot")
   let g:deoplete#sources#go#package_dot = 0
 endif
+
+if !exists("g:deoplete#sources#go#sort_class")
+  let g:deoplete#sources#go#sort_class = []
+endif
