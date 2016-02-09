@@ -89,38 +89,6 @@ let g:deoplete#enable_at_startup = 1
 ```
 
 
-## Deoplete Settings
-
-The source settings are by default set to `rank = 100` and `input_pattern = '[^. \t0-9]\.\w*'`.  
-If you want to customize those variables, insert the following into your `init.vim` after setting `runtimepath`.  
-e.g. if you want the `rank = 9999`,
-
-```vim
-call deoplete#custom#set('go', 'rank', 9999)
-```
-
-Available settings and their corresponding values
-
-| setting                 | `deoplete.nvim` default                   | `deoplete-go` default       |
-|-------------------------|-------------------------------------------|-----------------------------|
-| `name`                  | -                                         | go                          |
-| `mark`                  | -                                         | `[go]`                      |
-| `filetype`              | all filetypes                             | go                          |
-| `rank`                  | `100`                                     | 500                         |
-| `min_pattern_length`    | `g:deoplete#auto_completion_start_length` | -                           |
-| `input-pattern`         | -                                         | `'[^. \t0-9]\.\w*'`         |
-| `is_byteopts`           | `False`                                   | -                           |
-| `matchers`              | `deoplete-filter-matcher_default`         | -                           |
-| `sorters`               | `deoplete-filter-sorter_default`          | -                           |
-| `converters`            | `deoplete-filter-converter_default`       | -                           |
-
-Also, see 
-
-```vim
-:help deoplete-source-attributes
-```
-
-
 TODO:
 -----
 - [ ] Parse included cgo (C,C++ language) headers
