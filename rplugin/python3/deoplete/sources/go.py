@@ -25,7 +25,7 @@ class Source(Base):
         self.name = 'go'
         self.mark = '[go]'
         self.filetypes = ['go']
-        self.input_pattern = r'(?:[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
+        self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
         self.align_class = self.vim.vars['deoplete#sources#go#align_class']
