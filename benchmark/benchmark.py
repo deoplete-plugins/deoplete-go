@@ -39,7 +39,7 @@ def print_results(results):
     for suite_name, suite_results in results.items():
         print(suite_name)
         print('-' * 20)
-        for module_name, result in suite_results.items():
+        for module_name, result in sorted(suite_results.items(), key=lambda x:x[1]):
             print('{:10} {:.5f} s'.format(module_name, result))
         print()
 
