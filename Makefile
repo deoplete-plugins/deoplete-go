@@ -13,7 +13,7 @@ fetch:
 	$(GIT) submodule update --init
 
 build: fetch
-	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-lib=$(CURRENT)/build
+	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
 
 move: build
 	cp $(shell find $(CURRENT)/build -name ujson*.so) $(RPLUGIN_HOME)/deoplete/ujson.so
