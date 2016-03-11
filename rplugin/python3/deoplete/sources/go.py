@@ -75,6 +75,9 @@ class Source(Base):
             sep = ' '
             for complete in result[1]:
                 _class = complete['class']
+                if not _class.find('P', 0, 1):
+                    continue
+
                 word = complete['name']
                 info = complete['type']
 
