@@ -85,7 +85,7 @@ class Source(Base):
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
-                if _class == 'func':
+                elif _class == 'func':
                     word = word + '('
                     abbr += str(info).strip('func')
                 elif _class in ('type', 'var'):
