@@ -34,7 +34,7 @@ class Source(Base):
         self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
 
     def get_complete_position(self, context):
-        m = re.search(r'\w*$', context['input'])
+        m = re.search(r'\w*$|(?<=")[./\w]*$', context['input'])
         return m.start() if m else -1
 
     def gather_candidates(self, context):
@@ -73,11 +73,11 @@ class Source(Base):
         try:
             out = []
             sep = ' '
+            if result[1][0]['class'] == 'PANIC':
+                error(self.vim, 'gocode panicked')
+                return []
             for complete in result[1]:
                 _class = complete['class']
-                if not _class.find('P', 0, 1):
-                    continue
-
                 word = complete['name']
                 info = complete['type']
 
