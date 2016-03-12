@@ -64,7 +64,6 @@ class Source(Base):
             #              class_dict = {}.fromkeys(self.sort_class, [])
             class_dict = {
                 'package': [],
-                'import': [],
                 'func': [],
                 'type': [],
                 'var': [],
