@@ -92,10 +92,11 @@ let g:deoplete#enable_at_startup = 1
 TODO:
 -----
 - [ ] Parse included cgo (C,C++ language) headers
- - `ctags` will be blocking `deoplete.nvim`
-- [ ] ~~Support Go stdlib package `import "***"` name completion~~
- - ~~Retain the static api text? or parse?~~
- - See https://github.com/zchee/deoplete-go/pull/19
+  - `ctags` will be blocking `deoplete.nvim`
+- [ ] Support static json caching
+  - See https://github.com/zchee/deoplete-go/pull/19
+- [x] Support Go stdlib package `import "***"` name completion
+  - This feature has been implemented in gocode. Thanks @nhooyr!
 - [x] Execute `gocode` binary instead of call vim function
 - [x] Get and parse completion list of json format. such as `ycm`
 - [x] When there is no candidate infomation, deoplete will cause an error
