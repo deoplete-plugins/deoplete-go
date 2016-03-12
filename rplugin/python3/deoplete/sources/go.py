@@ -73,7 +73,7 @@ class Source(Base):
         try:
             out = []
             sep = ' '
-            if result[1][0]['class'] == 'PANIC':
+            if result[1][0]['class'] is 'PANIC':
                 error(self.vim, 'gocode panicked')
                 return []
             for complete in result[1]:
