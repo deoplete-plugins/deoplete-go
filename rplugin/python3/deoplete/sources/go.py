@@ -81,7 +81,7 @@ class Source(Base):
                 word = complete['name']
                 info = complete['type']
 
-                if not _class in ['package', 'import'] and self.align_class:
+                if not _class in ('package', 'import') and self.align_class:
                     abbr = '{:<6}'.format(_class) + word
                 else:
                     abbr = _class + sep + word
