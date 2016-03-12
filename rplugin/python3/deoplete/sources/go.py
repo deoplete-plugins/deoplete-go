@@ -59,7 +59,7 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
 
-        if not self.sort_class == []:
+        if self.sort_class:
             # TODO(zchee): Why not work with this?
             #              class_dict = {}.fromkeys(self.sort_class, [])
             class_dict = {
@@ -81,7 +81,7 @@ class Source(Base):
                 word = complete['name']
                 info = complete['type']
 
-                if not _class in ('package', 'import') and self.align_class:
+                if _class not in ('package', 'import') and self.align_class:
                     abbr = '{:<6}'.format(_class) + word
                 else:
                     abbr = _class + sep + word
@@ -99,13 +99,13 @@ class Source(Base):
                                   info=info,
                                   dup=1
                                   )
-                if self.sort_class == []:
+                if not self.sort_class:
                     out.append(candidates)
                 else:
                     class_dict[_class].append(candidates)
 
             # append with sort by complete['class']
-            if not self.sort_class == []:
+            if self.sort_class:
                 for c in self.sort_class:
                     for x in class_dict[c]:
                         out.append(x)
