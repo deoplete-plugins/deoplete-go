@@ -93,7 +93,8 @@ TODO:
 -----
 - [ ] Parse included cgo (C,C++ language) headers
  - `ctags` will be blocking `deoplete.nvim`
-- [ ] ~~Support Go stdlib package `import "***"` name completion~~
+- [x] ~~Support Go stdlib package `import "***"` name completion~~
+- [ ] ~~Support static json file caching~~
  - ~~Retain the static api text? or parse?~~
  - See https://github.com/zchee/deoplete-go/pull/19
 - [x] Execute `gocode` binary instead of call vim function
