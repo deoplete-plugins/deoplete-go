@@ -57,3 +57,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# json tarballs
+*.tar.gz

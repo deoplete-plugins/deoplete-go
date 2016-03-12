@@ -1,0 +1,8 @@
+./benchmark
+./build
+./images
+./plugin
+./*.tags
+
+# json tarballs
+*.tar.gz

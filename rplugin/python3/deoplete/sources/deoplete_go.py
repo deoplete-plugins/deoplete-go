@@ -28,36 +28,62 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
-        self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
-        self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
-        self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
-        self.debug_enabled = self.vim.vars.get('deoplete#sources#go#debug', 0)
+        self.gocode_binary = \
+            self.vim.vars['deoplete#sources#go#gocode_binary']
+        self.package_dot = \
+            self.vim.vars['deoplete#sources#go#package_dot']
+        self.sort_class = \
+            self.vim.vars['deoplete#sources#go#sort_class']
+        self.use_cache = \
+            self.vim.vars['deoplete#sources#go#use_cache']
+        self.data_directory = \
+            self.vim.vars['deoplete#sources#go#data_directory']
+        self.debug_enabled = \
+            self.vim.vars.get('deoplete#sources#go#debug', 0)
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
         return m.start() if m else -1
 
     def gather_candidates(self, context):
-        line = self.vim.current.window.cursor[0]
-        column = context['complete_position']
-
         buf = self.vim.current.buffer
-        offset = self.vim.call('line2byte', line) + \
-            charpos2bytepos(self.vim, context['input'][: column], column) - 1
-        source = '\n'.join(buf).encode()
+        pkgs = ''
+        parent = ''
+        pkg_data = ''
 
-        process = subprocess.Popen([self.GoCodeBinary(),
-                                    '-f=json',
-                                    'autocomplete',
-                                    buf.name,
-                                    str(offset)],
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   start_new_session=True)
-        process.stdin.write(source)
-        stdout_data, stderr_data = process.communicate()
-        result = loads(stdout_data.decode())
+        if self.use_cache:
+            pkgs = self.GetCurrentImportPackages(buf)
+            m = re.search(r'[\w]*.$', context['input'])
+            parent = str(m.group(0))
+
+            pkg_data = os.path.join(self.data_directory, parent + 'json')
+
+        if parent not in pkgs and '.' \
+                in parent and os.path.isfile(pkg_data):
+            with open(pkg_data) as json_pkg_data:
+                result = loads(json_pkg_data.read())
+
+        else:
+            line = self.vim.current.window.cursor[0]
+            column = context['complete_position']
+
+            offset = self.vim.call('line2byte', line) + \
+                charpos2bytepos(self.vim, context['input'][: column],
+                                column) - 1
+            source = '\n'.join(buf).encode()
+
+            process = subprocess.Popen([self.GoCodeBinary(),
+                                        '-f=json',
+                                        'autocomplete',
+                                        buf.name,
+                                        str(offset)],
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE,
+                                       start_new_session=True)
+            process.stdin.write(source)
+            stdout_data, stderr_data = process.communicate()
+            result = loads(stdout_data.decode())
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -110,6 +136,18 @@ class Source(Base):
             return out
         except Exception:
             return []
+
+    def GetCurrentImportPackages(self, buf):
+        pkgs = []
+        start = 0
+        for line, b in enumerate(buf):
+            if re.match(r'^\s*import \w*|^\s*import \(', b):
+                start = line
+            elif re.match(r'\)', b):
+                break
+            elif line > start:
+                pkgs.append(re.sub(r'\t|"', '', b))
+        return pkgs
 
     def GoCodeBinary(self):
         try:
