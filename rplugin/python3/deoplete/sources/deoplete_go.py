@@ -29,8 +29,6 @@ class Source(Base):
         self.rank = 500
 
         self.align_class = self.vim.vars['deoplete#sources#go#align_class']
-        self.data_directory = \
-            self.vim.vars['deoplete#sources#go#data_directory']
         self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
         self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
         self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
@@ -40,36 +38,26 @@ class Source(Base):
         return m.start() if m else -1
 
     def gather_candidates(self, context):
+        line = self.vim.current.window.cursor[0]
+        column = context['complete_position']
+
         buf = self.vim.current.buffer
-        pkgs = self.GetCurrentImportPackages(buf)
-        parent = str(context['input']).strip()
-        pkg_data = os.path.join(self.data_directory, parent + 'json')
+        offset = self.vim.call('line2byte', line) + \
+            charpos2bytepos(self.vim, context['input'][: column], column) - 1
+        source = '\n'.join(buf).encode()
 
-        if parent.strip('.') not in pkgs and '.' in parent \
-                and os.path.isfile(pkg_data):
-            with open(pkg_data) as json_pkg_data:
-                result = loads(json_pkg_data.read())
-        else:
-            line = self.vim.current.window.cursor[0]
-            column = context['complete_position']
-
-            offset = self.vim.call('line2byte', line) + \
-                charpos2bytepos(self.vim, context['input'][: column],
-                                column) - 1
-            source = '\n'.join(buf).encode()
-
-            process = subprocess.Popen([self.GoCodeBinary(),
-                                        '-f=json',
-                                        'autocomplete',
-                                        buf.name,
-                                        str(offset)],
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       start_new_session=True)
-            process.stdin.write(source)
-            stdout_data, stderr_data = process.communicate()
-            result = loads(stdout_data.decode())
+        process = subprocess.Popen([self.GoCodeBinary(),
+                                    '-f=json',
+                                    'autocomplete',
+                                    buf.name,
+                                    str(offset)],
+                                   stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   start_new_session=True)
+        process.stdin.write(source)
+        stdout_data, stderr_data = process.communicate()
+        result = loads(stdout_data.decode())
 
         if self.sort_class:
             # TODO(zchee): Why not work with this?
@@ -84,7 +72,7 @@ class Source(Base):
         try:
             out = []
             sep = ' '
-            if result[1][0]['class'] is 'PANIC':
+            if result[1][0]['class'] == 'PANIC':
                 error(self.vim, 'gocode panicked')
                 return []
             for complete in result[1]:
@@ -124,18 +112,6 @@ class Source(Base):
             return out
         except Exception:
             return []
-
-    def GetCurrentImportPackages(self, buf):
-        pkgs = []
-        start = 0
-        for line, b in enumerate(buf):
-            if re.match(r'^\s*import \w*|^\s*import \(', b):
-                start = line
-            elif re.match(r'\)', b):
-                break
-            elif line > start:
-                pkgs.append(re.sub(r'\t|"', '', b))
-        return pkgs
 
     def GoCodeBinary(self):
         try:
