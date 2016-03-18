@@ -92,6 +92,7 @@ class Source(Base):
                 candidates = dict(word=word,
                                   abbr=abbr,
                                   info=info,
+                                  menu=self.mark,
                                   dup=1
                                   )
                 if not self.sort_class or _class == 'import':
