@@ -81,17 +81,13 @@ class Source(Base):
                 info = complete['type']
 
                 if _class not in ('package', 'import') and self.align_class:
-                    abbr = '{:<6}'.format(_class) + word
+                    abbr = '{:<6}'.format(_class) + \
+                        str(word + sep + info).replace(' func', '')
                 else:
                     abbr = _class + sep + word
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
-                elif _class == 'func':
-                    word = word + '('
-                    abbr += str(info).strip('func')
-                elif _class in ('type', 'var'):
-                    abbr += sep + info
 
                 candidates = dict(word=word,
                                   abbr=abbr,
