@@ -82,7 +82,7 @@ class Source(Base):
 
                 if _class not in ('package', 'import') and self.align_class:
                     abbr = '{:<6}'.format(_class) + \
-                        str(word + sep + info).replace(' func', '')
+                        (word + sep + info).replace(' func', '')
                 else:
                     abbr = _class + sep + word
 
