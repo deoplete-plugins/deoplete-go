@@ -98,7 +98,7 @@ class Source(Base):
                                   info=info,
                                   dup=1
                                   )
-                if not self.sort_class:
+                if not self.sort_class or _class == 'import':
                     out.append(candidates)
                 else:
                     class_dict[_class].append(candidates)
