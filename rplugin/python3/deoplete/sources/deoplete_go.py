@@ -32,6 +32,7 @@ class Source(Base):
         self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
         self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
         self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
+        self.debug_enabled = self.vim.vars.get('deoplete#sources#go#debug', 0)
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\w]*$', context['input'])
