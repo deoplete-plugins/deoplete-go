@@ -23,7 +23,7 @@ class Source(Base):
         Base.__init__(self, vim)
 
         self.name = 'go'
-        self.mark = '[go]'
+        self.mark = '[Go]'
         self.filetypes = ['go']
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
