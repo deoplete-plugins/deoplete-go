@@ -62,7 +62,7 @@ pip3 install --upgrade neovim
 ### 3. Install latest of gocode
 
 ```bash
-go get github.com/nsf/gocode
+go get -u github.com/nsf/gocode
 ```
 
 ### 4. Install plugin and Build ujson module
