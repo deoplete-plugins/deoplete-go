@@ -35,7 +35,7 @@ class Source(Base):
         self.debug_enabled = self.vim.vars.get('deoplete#sources#go#debug', 0)
 
     def get_complete_position(self, context):
-        m = re.search(r'\w*$|(?<=")[./\w]*$', context['input'])
+        m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
         return m.start() if m else -1
 
     def gather_candidates(self, context):
