@@ -79,13 +79,13 @@ class Source(Base):
             for complete in result[1]:
                 _class = complete['class']
                 word = complete['name']
-                info = complete['type'].replace('func', '')
+                info = complete['type']
+                _abbr = (word + sep + info).replace(' func', '')
 
                 if _class not in ('package', 'import') and self.align_class:
-                    abbr = '{:<6}'.format(_class) + \
-                        word + info
+                    abbr = '{:<6}'.format(_class) + _abbr
                 else:
-                    abbr = _class + sep + word + info
+                    abbr = _class + sep + _abbr
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
