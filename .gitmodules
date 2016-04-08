@@ -1,6 +1,3 @@
 [submodule "rplugin/python3/deoplete/ujson"]
 	path = rplugin/python3/deoplete/ujson
 	url = https://github.com/esnme/ultrajson.git
-[submodule "ultrajson"]
-	path = ultrajson
-	url = https://github.com/esnme/ultrajson.git
