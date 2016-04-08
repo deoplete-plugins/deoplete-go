@@ -11,15 +11,11 @@ MODULE_NAME := deoplete_go.py
 
 all : $(TARGET)
 
-$(TARGET): fetch build move
-
-fetch:
+build/:
 	$(GIT) submodule update --init
-
-build: fetch
 	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
 
-move: build
+rplugin/python3/deoplete/ujson.so: build/
 	cp $(shell find $(CURRENT)/build -name ujson*.so) $(RPLUGIN_HOME)/deoplete/ujson.so
 
 test: lint
@@ -33,6 +29,6 @@ test_modules:
 	pip3 install -U -r ./tests/requirements.txt
 
 clean:
-	$(RM) -rf $(CURRENT)/build $(RPLUGIN_HOME)/deoplete/ujson.so $(RPLUGIN_HOME)/deoplete/ujson
+	$(RM) -rf $(CURRENT)/build $(RPLUGIN_HOME)/deoplete/ujson.so
 
-.PHONY: fetch build move test lint flake8 test_modules clean
+.PHONY: test lint flake8 test_modules clean
