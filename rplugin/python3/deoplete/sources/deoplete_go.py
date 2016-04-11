@@ -28,7 +28,6 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
-        self.align_class = self.vim.vars['deoplete#sources#go#align_class']
         self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
         self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
         self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
@@ -60,42 +59,43 @@ class Source(Base):
         stdout_data, stderr_data = process.communicate()
         result = loads(stdout_data.decode())
 
-        if self.sort_class:
-            # TODO(zchee): Why not work with this?
-            #              class_dict = {}.fromkeys(self.sort_class, [])
-            class_dict = {
-                'package': [],
-                'func': [],
-                'type': [],
-                'var': [],
-                'const': [],
-            }
         try:
-            out = []
-            sep = ' '
             if result[1][0]['class'] == 'PANIC':
                 error(self.vim, 'gocode panicked')
                 return []
+
+            if self.sort_class:
+                # TODO(zchee): Why not work with this?
+                #              class_dict = {}.fromkeys(self.sort_class, [])
+                class_dict = {
+                    'package': [],
+                    'func': [],
+                    'type': [],
+                    'var': [],
+                    'const': [],
+                }
+
+            out = []
+            sep = ' '
+
             for complete in result[1]:
                 _class = complete['class']
                 word = complete['name']
-                info = complete['type']
-                _abbr = (word + sep + info).replace(' func', '')
-
-                if _class not in ('package', 'import') and self.align_class:
-                    abbr = '{:<6}'.format(_class) + _abbr
-                else:
-                    abbr = _class + sep + _abbr
+                abbr = _class
+                kind = word + sep + complete['type']
+                info = kind
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
 
                 candidates = dict(word=word,
                                   abbr=abbr,
+                                  kind=kind.replace(' func', ''),
                                   info=info,
                                   menu=self.mark,
                                   dup=1
                                   )
+
                 if not self.sort_class or _class == 'import':
                     out.append(candidates)
                 else:
