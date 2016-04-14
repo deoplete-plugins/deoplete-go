@@ -79,18 +79,18 @@ class Source(Base):
             sep = ' '
 
             for complete in result[1]:
-                _class = complete['class']
                 word = complete['name']
-                abbr = _class
-                kind = word + sep + complete['type']
-                info = kind
+                info = complete['type']
+                _class = complete['class']
+                abbr = str(word + sep + info).replace(' func', '', 1)
+                kind = _class
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
 
                 candidates = dict(word=word,
                                   abbr=abbr,
-                                  kind=kind.replace(' func', ''),
+                                  kind=kind,
                                   info=info,
                                   menu=self.mark,
                                   dup=1
