@@ -95,7 +95,7 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 | `g:deoplete#sources#go#package_dot`    | `0`                            | No        |
 | `g:deoplete#sources#go#sort_class`     | `[]`                           | Recommend |
 | `g:deoplete#sources#go#use_cache`      | `0`                            | Recommend |
-| `g:deoplete#sources#go#data_directory` | `$HOME.'/.config/gocode/json'` | Recommend |
+| `g:deoplete#sources#go#json_directory` | `$HOME.'/.config/gocode/json'` | Recommend |
 
 ### `g:deoplete#sources#go#align_class`
 #### Class Aligning
@@ -173,7 +173,7 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 
 Try test it with the `os` package :)
 
-### `g:deoplete#sources#go#use_cache` `g:deoplete#sources#go#data_directory`
+### `g:deoplete#sources#go#use_cache` `g:deoplete#sources#go#json_directory`
 #### Static json caching
 
 `g:deoplete#sources#go#use_cache`
@@ -184,9 +184,9 @@ Try test it with the `os` package :)
 | **Type**     | int           |
 | **Example**  | `1`           |
 
-`g:deoplete#sources#go#data_directory`
+`g:deoplete#sources#go#json_directory`
 
-| **Default**  | `~/.cache/gocode/json` |
+| **Default**  | `~/.cache/deoplete/go/$GOOS_$GOARCH` |
 |--------------|------------------------|
 | **Required** | **Recommend**          |
 | **Type**     | string                 |
@@ -202,14 +202,14 @@ Terms:
 - You typed package name have not `import` current buffer
 - Match the typed package name and json file name
 
-`deoplete-go` will parse `g:deoplete#sources#go#data_directory` directory. You can define of json data directory.
-Default is `~/.cache/gocode/json`.
+`deoplete-go` will parse `g:deoplete#sources#go#json_directory` directory. You can define of json data directory.
+Default is `~/.cache/deoplete/go/$GOOS_$GOARCH`.
 
 Also, See [How to use static json caching](#how-to-use-static-json-caching)
 
 ```vim
 let g:deoplete#sources#go#use_cache = 1
-let g:deoplete#sources#go#data_directory = '/path/to/data_dir'
+let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
 ===
@@ -223,7 +223,7 @@ let g:deoplete#sources#go#data_directory = '/path/to/data_dir'
 
 Pre-generate json data is [data/json](./data/json).
 If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.
-`/path/to/data_dir` is `g:deoplete#sources#go#data_directory`.
+`/path/to/data_dir` is `g:deoplete#sources#go#json_directory`.
 
 And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.
 If you want to it, run `make gen_json`.
@@ -259,7 +259,7 @@ let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 let g:deoplete#sources#go#use_cache = 1
-let g:deoplete#sources#go#data_directory = '/path/to/data_dir'
+let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
 ===

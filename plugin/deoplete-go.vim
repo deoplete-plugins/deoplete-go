@@ -19,5 +19,5 @@ let g:deoplete#sources#go#sort_class =
 let g:deoplete#sources#go#use_cache =
       \ get( g:, 'deoplete#sources#go#use_cache', 0 )
 
-let g:deoplete#sources#go#data_directory =
-      \ get( g:, 'deoplete#sources#go#data_directory', $XDG_DATA_HOME.'/gocode/json/' )
+let g:deoplete#sources#go#json_directory =
+      \ get( g:, 'deoplete#sources#go#json_directory', '' )

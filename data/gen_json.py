@@ -27,8 +27,10 @@ def main():
 
         func = None
         if re.search(r'/', pkg):
+            library = str(pkg).split(r'/')[:-1]
             func = str(pkg).split(r'/')[-1]
         else:
+            library = pkg
             func = pkg
         source = str(fs).replace('IMPORT', pkg).replace('FUNC', func).encode()
 
@@ -52,8 +54,11 @@ def main():
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
+        pkg_dir = os.path.join(out_dir, ''.join(library))
+        if not os.path.exists(pkg_dir):
+            os.makedirs(pkg_dir)
         out_path = \
-            os.path.join(out_dir, func + '.json')
+            os.path.join(pkg_dir, func + '.json')
         out = open(out_path, 'w')
         out.write(json.dumps(result, sort_keys=True))
         out.close()
@@ -75,6 +80,6 @@ def FindBinaryPath(cmd):
             binary = os.path.join(path, cmd)
             if is_exec(binary):
                 return binary
-    return error(self.vim, 'gocode binary not found')
+    return print('gocode binary not found')
 
 main()
