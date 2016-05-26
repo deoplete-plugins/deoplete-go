@@ -166,7 +166,7 @@ class Source(Base):
                             column) - 1
         source = '\n'.join(buffer).encode()
 
-        process = subprocess.Popen([self.GoCodeBinary(),
+        process = subprocess.Popen([self.find_gocode_binary(),
                                     '-f=json',
                                     'autocomplete',
                                     buffer.name,
@@ -284,16 +284,16 @@ char CString() {
             list(map(self.cgo_parse_candidates, cr.results))
         return self.cgo_cache[headers]
 
-    def GoCodeBinary(self):
+    def find_gocode_binary(self):
         try:
             if os.path.isfile(self.gocode_binary):
                 return self.gocode_binary
             else:
                 raise
         except Exception:
-            return self.FindBinaryPath('gocode')
+            return self.find_binary_path('gocode')
 
-    def FindBinaryPath(self, cmd):
+    def find_binary_path(self, cmd):
         def is_exec(fpath):
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
