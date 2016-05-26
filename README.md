@@ -212,6 +212,100 @@ let g:deoplete#sources#go#use_cache = 1
 let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
+### `g:deoplete#sources#go#cgo`
+#### cgo complete use libclang-python3
+
+| **Default**  | `0`   |
+|--------------|-------|
+| **Required** | *Any* |
+| **Type**     | int   |
+| **Example**  | `1`   |
+
+If current buffer have `import "C"` also `#include <foo.h>` and when you type `C.`, deoplete-go will be display the C function in the `foo.h`.
+
+Simple example is below. `|` is cursor.
+
+```go
+package main
+
+/*
+#include <stdlib.h>
+*/
+import "C"
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Printf()
+	C.|
+}
+```
+
+Will return the `pid_t`, `malloc`, `free` and more.  
+
+The real example use libgit2.
+
+```go
+package main
+
+/*
+#include <git2.h>
+*/
+import "C"
+import (
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/libgit2/git2go"
+)
+
+func main() {
+	repoPath := filepath.Join(os.Getenv("GOPATH"), "src/github.com/libgit2/git2go")
+	gitRepo, err := git.OpenRepository(repoPath)
+	C.git_blame_|
+	if err != nil {
+		log.Fatal(err)
+	}
+	commitOid, err := gitRepo.Head()
+	if err != nil {
+
+	}
+}
+```
+
+Will return the that completion list.  
+
+![cgo_libgit2](images/cgo_libgit2.png)
+
+Now support current buffer only.  
+TODO: Support parses `.c`, `.h` file.
+
+### `g:deoplete#sources#go#cgo#libclang_path`
+#### libclang shared library path for cgo complete
+
+| **Default**  | ` `                            |
+|--------------|--------------------------------|
+| **Required** | *Any*                          |
+| **Type**     | string                         |
+| **Example**  | `/opt/llvm/lib/libclang.dylib` |
+
+libclang shared library path option.  
+In darwin, `libclang.dylib`, In Linux, `libclang.so`.  
+
+### `g:deoplete#sources#go#cgo#std`
+#### C language standard version
+
+| **Default**  | `c11`  |
+|--------------|--------|
+| **Required** | *Any*  |
+| **Type**     | string |
+| **Example**  | `c99`  |
+
+C language standard version option.  
+If not set, deoplete-go use `c11`(latest) version.
+
 ===
 
 ### How to use static json caching
@@ -266,7 +360,7 @@ let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 
 TODO:
 -----
-- [ ] Parse included cgo (C, C++ language) headers on current buffer
+- [x] Parse included cgo (C, C++ language) headers on current buffer
   - `ctags` will be blocking `deoplete.nvim`
 - [x] Support static json caching
   - See https://github.com/zchee/deoplete-go/pull/19
