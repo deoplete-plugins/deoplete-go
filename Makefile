@@ -57,10 +57,10 @@ test: lint
 lint: flake8
 
 flake8: test_modules
-	flake8 -v --config=$(PWD)/.flake8 ${RPLUGIN_PATH}${MODULE_NAME} || true
+	@flake8 --config=$(PWD)/.flake8 ${RPLUGIN_PATH}${MODULE_NAME} || true
 
 test_modules:
-	pip3 install -U -r ./tests/requirements.txt
+	@pip3 -q install -U -r./tests/requirements.txt
 
 clean:
 	$(RM) -rf $(CURRENT)/build $(RPLUGIN_HOME)/deoplete/ujson.so
