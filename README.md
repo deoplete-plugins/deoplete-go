@@ -88,12 +88,14 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 ## Available Settings
 
-| Setting value                         | Default | Required  |
-|:--------------------------------------|:-------:|:---------:|
-| `g:deoplete#sources#go#align_class`   | `0`     | No        |
-| `g:deoplete#sources#go#gocode_binary` | `''`    | Recommend |
-| `g:deoplete#sources#go#package_dot`   | `0`     | No        |
-| `g:deoplete#sources#go#sort_class`    | `[]`    | Recommend |
+| Setting value                          | Default                        | Required  |
+|:---------------------------------------|:------------------------------:|:---------:|
+| `g:deoplete#sources#go#align_class`    | `0`                            | No        |
+| `g:deoplete#sources#go#gocode_binary`  | `''`                           | Recommend |
+| `g:deoplete#sources#go#package_dot`    | `0`                            | No        |
+| `g:deoplete#sources#go#sort_class`     | `[]`                           | Recommend |
+| `g:deoplete#sources#go#use_cache`      | `0`                            | Recommend |
+| `g:deoplete#sources#go#json_directory` | `$HOME.'/.config/gocode/json'` | Recommend |
 
 ### `g:deoplete#sources#go#align_class`
 #### Class Aligning
@@ -171,6 +173,71 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 
 Try test it with the `os` package :)
 
+### `g:deoplete#sources#go#use_cache` `g:deoplete#sources#go#json_directory`
+#### Static json caching
+
+`g:deoplete#sources#go#use_cache`
+
+| **Default**  | `0`           |
+|--------------|---------------|
+| **Required** | **Recommend** |
+| **Type**     | int           |
+| **Example**  | `1`           |
+
+`g:deoplete#sources#go#json_directory`
+
+| **Default**  | `~/.cache/deoplete/go/$GOOS_$GOARCH` |
+|--------------|------------------------|
+| **Required** | **Recommend**          |
+| **Type**     | string                 |
+| **Example**  | `'/path/to/data_dir'`  |
+
+Use static json caching Go stdlib package API.
+If matched name of stdlib and input package name, it returns the static json data without the use of gocode.
+and, Possible to get package API if have not `import` of current buffer.
+
+Terms:
+
+- Hook the insert of dot `.` (e.g. `fmt.|`)
+- You typed package name have not `import` current buffer
+- Match the typed package name and json file name
+
+`deoplete-go` will parse `g:deoplete#sources#go#json_directory` directory. You can define of json data directory.
+Default is `~/.cache/deoplete/go/$GOOS_$GOARCH`.
+
+Also, See [How to use static json caching](#how-to-use-static-json-caching)
+
+```vim
+let g:deoplete#sources#go#use_cache = 1
+let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
+```
+
+===
+
+### How to use static json caching
+
+| **Current Go version** | `1.6`                 |
+|------------------------|-----------------------|
+| `$GOOS`                | `darwin`, `linux`     |
+| `$GOARCH`              | `amd64`               |
+
+Pre-generate json data is [data/json](./data/json).
+If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.
+`/path/to/data_dir` is `g:deoplete#sources#go#json_directory`.
+
+And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.
+If you want to it, run `make gen_json`.
+Will generated json file to `./data/json/VERSION/$GOOS_$GOARCH`.
+
+`make gen_json` command also will create `./data/stdlib.txt`. It same as `go tool api` result.
+In detail,
+```bash
+go tool api -contexts $GOOS-$GOARCH-cgo | grep -v 'golang.org/x/net/http2/hpack' | sed -e s/,//g | awk '{print $2}' | uniq > ./data/stdlib.txt
+```
+
+This api list used in the base for the generation of json file.
+
+
 ===
 
 ## Sample init.vim
@@ -191,6 +258,8 @@ let g:deoplete#enable_at_startup = 1
 " deoplete-go settings
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+let g:deoplete#sources#go#use_cache = 1
+let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
 ===
@@ -199,7 +268,7 @@ TODO:
 -----
 - [ ] Parse included cgo (C, C++ language) headers on current buffer
   - `ctags` will be blocking `deoplete.nvim`
-- [ ] Support static json caching
+- [x] Support static json caching
   - See https://github.com/zchee/deoplete-go/pull/19
 - [x] Support Go stdlib package `import "***"` name completion
   - This feature has been implemented in gocode. Thanks @nhooyr!

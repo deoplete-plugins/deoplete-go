@@ -28,36 +28,50 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
-        self.gocode_binary = self.vim.vars['deoplete#sources#go#gocode_binary']
-        self.package_dot = self.vim.vars['deoplete#sources#go#package_dot']
-        self.sort_class = self.vim.vars['deoplete#sources#go#sort_class']
-        self.debug_enabled = self.vim.vars.get('deoplete#sources#go#debug', 0)
+        self.gocode_binary = \
+            self.vim.vars['deoplete#sources#go#gocode_binary']
+        self.package_dot = \
+            self.vim.vars['deoplete#sources#go#package_dot']
+        self.sort_class = \
+            self.vim.vars['deoplete#sources#go#sort_class']
+        self.use_cache = \
+            self.vim.vars['deoplete#sources#go#use_cache']
+        self.json_directory = \
+            self.vim.vars['deoplete#sources#go#json_directory']
+        self.debug_enabled = \
+            self.vim.vars.get('deoplete#sources#go#debug', 0)
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
         return m.start() if m else -1
 
     def gather_candidates(self, context):
-        line = self.vim.current.window.cursor[0]
-        column = context['complete_position']
+        buffer = self.vim.current.buffer
 
-        buf = self.vim.current.buffer
-        offset = self.vim.call('line2byte', line) + \
-            charpos2bytepos(self.vim, context['input'][: column], column) - 1
-        source = '\n'.join(buf).encode()
+        if self.use_cache:
+            import_packages = self.get_import_package(buffer)
+            import_package = [x['package'] for x in import_packages]
 
-        process = subprocess.Popen([self.GoCodeBinary(),
-                                    '-f=json',
-                                    'autocomplete',
-                                    buf.name,
-                                    str(offset)],
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   start_new_session=True)
-        process.stdin.write(source)
-        stdout_data, stderr_data = process.communicate()
-        result = loads(stdout_data.decode())
+            m = re.search(r'[\w]*.$', context['input'])
+            package = str(m.group(0))
+            library = [x['library'][0] for x in import_packages if str(
+                package).strip('.') == x['package']]
+            if len(library) == 0:
+                library = [str(package).strip('.')]
+            package_json = os.path.join(
+                self.json_directory,
+                library[0],
+                package + 'json')
+
+            if package not in import_package and \
+                    '.' in package and os.path.isfile(package_json):
+                with open(package_json) as j:
+                    result = loads(j.read())
+            else:
+                result = self.get_complete_result(buffer, context)
+
+        else:
+            result = self.get_complete_result(buffer, context)
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -110,6 +124,59 @@ class Source(Base):
             return out
         except Exception:
             return []
+
+    def get_complete_result(self, buffer, context):
+        line = self.vim.current.window.cursor[0]
+        column = context['complete_position']
+
+        offset = self.vim.call('line2byte', line) + \
+            charpos2bytepos(self.vim, context['input'][: column],
+                            column) - 1
+        source = '\n'.join(buffer).encode()
+
+        process = subprocess.Popen([self.GoCodeBinary(),
+                                    '-f=json',
+                                    'autocomplete',
+                                    buffer.name,
+                                    str(offset)],
+                                   stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   start_new_session=True)
+        process.stdin.write(source)
+        stdout_data, stderr_data = process.communicate()
+        return loads(stdout_data.decode())
+
+    def get_import_package(self, buffer):
+        start = 0
+        packages = []
+
+        for line, b in enumerate(buffer):
+
+            if re.match(r'^\s*import \w*|^\s*import \(', b):
+                start = line
+                continue
+            elif re.match(r'\)', b):
+                break
+            elif line > start:
+                package_name = re.sub(r'\t|"', '', b)
+                if str(package_name).find(r'/', 0) > 0:
+                    full_package_name = str(package_name).split('/', -1)
+                    package_name = full_package_name[
+                        len(full_package_name) - 1]
+                    library = '/'.join(
+                        full_package_name[:len(full_package_name) - 1]),
+
+                    packages.append(dict(
+                        library=library,
+                        package=package_name
+                    ))
+                else:
+                    packages.append(dict(
+                        library='none',
+                        package=package_name
+                    ))
+        return packages
 
     def GoCodeBinary(self):
         try:
