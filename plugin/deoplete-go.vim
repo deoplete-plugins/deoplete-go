@@ -21,3 +21,5 @@ let g:deoplete#sources#go#use_cache =
 
 let g:deoplete#sources#go#json_directory =
       \ get( g:, 'deoplete#sources#go#json_directory', '' )
+let g:deoplete#sources#go#cgo = 
+      \ get( g:, 'deoplete#sources#go#cgo', 0)
