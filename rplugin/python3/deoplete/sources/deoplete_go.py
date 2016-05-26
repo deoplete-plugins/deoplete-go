@@ -44,8 +44,6 @@ class Source(Base):
             self.vim.vars['deoplete#sources#go#cgo']
 
         if self.cgo:
-            self.complete_pos = re.compile(r'\w*$|(?<=C.)*$|(?<=")[./\-\w]*$')
-
             clang_dir = os.path.join(os.path.dirname(current_dir), 'clang')
             sys.path.insert(0, clang_dir)
             import clang.cindex as clang
@@ -53,7 +51,9 @@ class Source(Base):
             self.libclang_path = \
                 self.vim.vars.get('deoplete#sources#go#cgo#libclang_path', '')
             self.cgo_std = \
-                ['-std', self.vim.vars.get('deoplete#sources#go#cgo#std', 'c11'), '-x', 'c']
+                ['-std',
+                 self.vim.vars.get('deoplete#sources#go#cgo#std', 'c11'),
+                 '-x', 'c']
 
             if not clang.Config.loaded:
                 clang.Config.set_library_file(self.libclang_path)
@@ -62,8 +62,6 @@ class Source(Base):
             self.index = clang.Index.create(0)
 
             self.cgo_cache, self.cgo_headers = dict(), None
-        else:
-            self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
@@ -270,7 +268,6 @@ char CString() {
         # PARSE_SKIP_FUNCTION_BODIES = 64
         # PARSE_INCLUDE_BRIEF_COMMENTS_IN_CODE_COMPLETION = 128
         options = 15
-        self.debug(self.cgo_std)
 
         tu = self.index.parse('fake.c', self.cgo_std,
                               unsaved_files=files,
