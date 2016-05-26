@@ -63,6 +63,13 @@ class Source(Base):
 
             self.cgo_cache, self.cgo_headers = dict(), None
 
+    def on_event(self, context):
+        if context['event'] == 'BufWinEnter':
+            buffer = self.vim.current.buffer
+            context['complete_position'] = self.vim.current.window.cursor[1]
+
+            self.get_complete_result(buffer, context)
+
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
         return m.start() if m else -1
