@@ -88,32 +88,14 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 ## Available Settings
 
-| Setting value                          | Default                        | Required  |
-|:---------------------------------------|:------------------------------:|:---------:|
-| `g:deoplete#sources#go#align_class`    | `0`                            | No        |
-| `g:deoplete#sources#go#gocode_binary`  | `''`                           | Recommend |
-| `g:deoplete#sources#go#package_dot`    | `0`                            | No        |
-| `g:deoplete#sources#go#sort_class`     | `[]`                           | Recommend |
-| `g:deoplete#sources#go#use_cache`      | `0`                            | Recommend |
-| `g:deoplete#sources#go#json_directory` | `$HOME.'/.config/gocode/json'` | Recommend |
-
-### `g:deoplete#sources#go#align_class`
-#### Class Aligning
-
-![Unaligned vs Aligned classes](images/align_class.png)
-
-| **Default**  | `0` |
-|--------------|-----|
-| **Required** | No  |
-| **Type**     | int |
-| **Example**  | `1` |
-
-By default, the classes (const, func, type, var) are not aligned in the popup menu.  
-In Screenshot, First is unaligned, second is aligned.  
-If you would like them aligned just set:
-```vim
-let g:deoplete#sources#go#align_class = 1
-```
+| Setting value                          | Default | Required      |
+|:---------------------------------------|:-------:|:-------------:|
+| `g:deoplete#sources#go#gocode_binary`  | `''`    | **Recommend** |
+| `g:deoplete#sources#go#package_dot`    | `0`     | No            |
+| `g:deoplete#sources#go#sort_class`     | `[]`    | **Recommend** |
+| `g:deoplete#sources#go#use_cache`      | `0`     | **Recommend** |
+| `g:deoplete#sources#go#json_directory` | `''`    | **Recommend** |
+| `g:deoplete#sources#go#cgo`            | `0`     | *Any*         |
 
 ### `g:deoplete#sources#go#gocode_binary`
 #### `gocode` Binary
@@ -186,14 +168,14 @@ Try test it with the `os` package :)
 
 `g:deoplete#sources#go#json_directory`
 
-| **Default**  | `~/.cache/deoplete/go/$GOOS_$GOARCH` |
-|--------------|------------------------|
-| **Required** | **Recommend**          |
-| **Type**     | string                 |
-| **Example**  | `'/path/to/data_dir'`  |
+| **Default**  | `''`                                   |
+|--------------|----------------------------------------|
+| **Required** | **Recommend**                          |
+| **Type**     | string                                 |
+| **Example**  | `'~/.cache/deoplete/go/$GOOS_$GOARCH'` |
 
-Use static json caching Go stdlib package API.
-If matched name of stdlib and input package name, it returns the static json data without the use of gocode.
+Use static json caching Go stdlib package API.  
+If matched name of stdlib and input package name, it returns the static json data without the use of gocode.  
 and, Possible to get package API if have not `import` of current buffer.
 
 Terms:
@@ -202,8 +184,8 @@ Terms:
 - You typed package name have not `import` current buffer
 - Match the typed package name and json file name
 
-`deoplete-go` will parse `g:deoplete#sources#go#json_directory` directory. You can define of json data directory.
-Default is `~/.cache/deoplete/go/$GOOS_$GOARCH`.
+`deoplete-go` will parse `g:deoplete#sources#go#json_directory` directory. You can define of json data directory.  
+Recommend is `~/.cache/deoplete/go/$GOOS_$GOARCH` because this directly use other deoplete sources(e.g. deoplete-deji).
 
 Also, See [How to use static json caching](#how-to-use-static-json-caching)
 
@@ -310,20 +292,20 @@ If not set, deoplete-go use `c11`(latest) version.
 
 ### How to use static json caching
 
-| **Current Go version** | `1.6`                 |
-|------------------------|-----------------------|
-| `$GOOS`                | `darwin`, `linux`     |
-| `$GOARCH`              | `amd64`               |
+| **Current Go version** | `1.6.2`           |
+|------------------------|-------------------|
+| `$GOOS`                | `darwin`, `linux` |
+| `$GOARCH`              | `amd64`           |
 
-Pre-generate json data is [data/json](./data/json).
-If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.
+Pre-generate json data is [data/json](./data/json).  
+If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.  
 `/path/to/data_dir` is `g:deoplete#sources#go#json_directory`.
 
-And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.
-If you want to it, run `make gen_json`.
+And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.  
+If you want to it, run `make gen_json`.  
 Will generated json file to `./data/json/VERSION/$GOOS_$GOARCH`.
 
-`make gen_json` command also will create `./data/stdlib.txt`. It same as `go tool api` result.
+`make gen_json` command also will create `./data/stdlib.txt`. It same as `go tool api` result.  
 In detail,
 ```bash
 go tool api -contexts $GOOS-$GOARCH-cgo | grep -v 'golang.org/x/net/http2/hpack' | sed -e s/,//g | awk '{print $2}' | uniq > ./data/stdlib.txt
