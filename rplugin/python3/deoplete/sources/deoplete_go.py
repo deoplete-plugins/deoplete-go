@@ -1,7 +1,6 @@
 import os
 import re
 import subprocess
-import sys
 
 from .base import Base
 
@@ -12,7 +11,6 @@ from deoplete.util import load_external_module
 load_external_module(__file__, 'sources/deoplete_go')
 from clang_index import Clang_Index
 from stdlib import stdlib
-
 
 try:
     load_external_module(__file__, 'ujson')
@@ -152,8 +150,7 @@ class Source(Base):
                                   kind=kind,
                                   info=info,
                                   menu=self.mark,
-                                  dup=1
-                                  )
+                                  dup=1)
 
                 if not self.sort_class or _class == 'import':
                     out.append(candidates)
@@ -179,15 +176,13 @@ class Source(Base):
                             column) - 1
         source = '\n'.join(buffer).encode()
 
-        process = subprocess.Popen([self.find_gocode_binary(),
-                                    '-f=json',
-                                    'autocomplete',
-                                    buffer.name,
-                                    str(offset)],
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   start_new_session=True)
+        process = subprocess.Popen(
+            [self.find_gocode_binary(), '-f=json', 'autocomplete', buffer.name,
+             str(offset)],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
         return loads(stdout_data.decode())
@@ -207,20 +202,15 @@ class Source(Base):
                 package_name = re.sub(r'\t|"', '', b)
                 if str(package_name).find(r'/', 0) > 0:
                     full_package_name = str(package_name).split('/', -1)
-                    package_name = full_package_name[
-                        len(full_package_name) - 1]
-                    library = '/'.join(
-                        full_package_name[:len(full_package_name) - 1]),
+                    package_name = full_package_name[len(full_package_name) -
+                                                     1]
+                    library = '/'.join(full_package_name[:len(
+                        full_package_name) - 1]),
 
-                    packages.append(dict(
-                        library=library,
-                        package=package_name
-                    ))
+                    packages.append(dict(library=library,
+                                         package=package_name))
                 else:
-                    packages.append(dict(
-                        library='none',
-                        package=package_name
-                    ))
+                    packages.append(dict(library='none', package=package_name))
         return packages
 
     def cgo_get_include_header(self, buffer):
@@ -260,10 +250,10 @@ class Source(Base):
         completion['word'] = word
         completion['abbr'] = completion['info'] = placeholder
 
-        completion['kind'] = ' '.join(
-            [(Clang_Index.kinds[result.cursorKind]
-              if (result.cursorKind in Clang_Index.kinds)
-              else str(result.cursorKind)), _type])
+        completion['kind'] = \
+            ' '.join([(Clang_Index.kinds[result.cursorKind]
+                       if (result.cursorKind in Clang_Index.kinds) else
+                       str(result.cursorKind)), _type])
 
         return completion
 
@@ -282,12 +272,13 @@ char CString() {
         # PARSE_INCLUDE_BRIEF_COMMENTS_IN_CODE_COMPLETION = 128
         options = 15
 
-        tu = self.index.parse('fake.c', self.cgo_std,
+        tu = self.index.parse('fake.c',
+                              self.cgo_std,
                               unsaved_files=files,
                               options=options)
 
-        cr = tu.codeComplete('fake.c',
-                             (count + 2), 1,
+        cr = tu.codeComplete('fake.c', (count + 2),
+                             1,
                              unsaved_files=files,
                              include_macros=False,
                              include_code_patterns=False,
@@ -307,6 +298,7 @@ char CString() {
             return self.find_binary_path('gocode')
 
     def find_binary_path(self, cmd):
+
         def is_exec(fpath):
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
