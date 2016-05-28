@@ -152,7 +152,6 @@ class Source(Base):
 
         m = re.search(r'(?:\b[\w\d]\w)\w+(?=\.)', context['input'])
         package = str(m.group(0)) if m else ''
-        self.vim.command("echo '" + package + "'")
         current_import = self.parse_import_package(buffer)
         import_package = [x['package'] for x in current_import]
 
