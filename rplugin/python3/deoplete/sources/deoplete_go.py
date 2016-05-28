@@ -30,6 +30,8 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
+        self.complete_pos = None
+
         self.gocode_binary = \
             self.vim.vars['deoplete#sources#go#gocode_binary']
         self.package_dot = \
@@ -46,6 +48,7 @@ class Source(Base):
             self.vim.vars['deoplete#sources#go#cgo']
 
         if self.cgo:
+            self.complete_pos = re.compile(r'\w*$|(?<=C.)*$|(?<=")[./\-\w]*$')
             load_external_module(__file__, 'clang')
             import clang.cindex as clang
 
@@ -63,6 +66,8 @@ class Source(Base):
             self.index = clang.Index.create(0)
 
             self.cgo_cache, self.cgo_headers = dict(), None
+        else:
+            self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
     def on_event(self, context):
         if context['event'] == 'BufWinEnter':
@@ -72,7 +77,7 @@ class Source(Base):
             self.get_complete_result(buffer, context, kill=True)
 
     def get_complete_position(self, context):
-        m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
+        m = self.complete_pos.search(context['input'])
         return m.start() if m else -1
 
     def gather_candidates(self, context):
@@ -88,34 +93,8 @@ class Source(Base):
                 count, self.cgo_headers = self.cgo_get_include_header(buffer)
                 return self.cgo_complete(count, self.cgo_headers)
 
-        if self.use_cache:
-            m = re.search(r'[\w]+(?=\.)', context['input'])
-            package = str(m.group(0)) if m else ''
-            current_import = self.parse_import_package(buffer)
-            import_package = [x['package'] for x in current_import]
-
-            if package != '' and package not in import_package:
-                try:
-                    library = stdlib.packages[package]
-                except KeyError:
-                    result = self.get_complete_result(buffer, context)
-                else:
-                    import_library = \
-                        [x['library'][0] for x in
-                         current_import if package == x['package']]
-
-                    result = [0, []]
-                    for x in library:
-                        package_json = \
-                            os.path.join(self.json_directory, x,
-                                         package + '.json')
-                        if x not in import_library and \
-                                os.path.isfile(package_json):
-                            with open(package_json) as j:
-                                result[1] += [x for x in loads(j.read())[1]]
-            else:
-                result = self.get_complete_result(buffer, context)
-        else:
+        result = self.get_cache(context, buffer)
+        if result is None:
             result = self.get_complete_result(buffer, context)
 
         try:
@@ -166,6 +145,33 @@ class Source(Base):
             return out
         except Exception:
             return []
+
+    def get_cache(self, context, buffer):
+        if not self.use_cache:
+            return None
+
+        m = re.search(r'(?:\b[\w\d]\w)\w+(?=\.)', context['input'])
+        package = str(m.group(0)) if m else ''
+        self.vim.command("echo '" + package + "'")
+        current_import = self.parse_import_package(buffer)
+        import_package = [x['package'] for x in current_import]
+
+        if package == '' or package in import_package \
+                or package not in stdlib.packages:
+            return None
+
+        library = stdlib.packages.get(package)
+        import_library = [x['library'][0] for x in current_import
+                          if package == x['package']]
+        result = [0, []]
+        for x in library:
+            package_json = \
+                os.path.join(self.json_directory, x, package + '.json')
+            if x not in import_library and os.path.isfile(package_json):
+                with open(package_json) as j:
+                    result[1] += [x for x in loads(j.read())[1]]
+
+        return result
 
     def get_complete_result(self, buffer, context, **kwargs):
         line = self.vim.current.window.cursor[0]
