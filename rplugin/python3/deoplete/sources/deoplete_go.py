@@ -69,7 +69,7 @@ class Source(Base):
             buffer = self.vim.current.buffer
             context['complete_position'] = self.vim.current.window.cursor[1]
 
-            self.get_complete_result(buffer, context)
+            self.get_complete_result(buffer, context, kill=True)
 
     def get_complete_position(self, context):
         m = re.search(r'\w*$|(?<=")[./\-\w]*$', context['input'])
@@ -167,7 +167,7 @@ class Source(Base):
         except Exception:
             return []
 
-    def get_complete_result(self, buffer, context):
+    def get_complete_result(self, buffer, context, **kwargs):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
 
@@ -185,6 +185,8 @@ class Source(Base):
             start_new_session=True)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
+        if kwargs and kwargs['kill'] is True:
+            process.kill
         return loads(stdout_data.decode())
 
     def parse_import_package(self, buffer):
