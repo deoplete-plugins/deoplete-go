@@ -153,7 +153,29 @@ To display all words while sorting, set:
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 ```
 
-Try test it with the `os` package :)
+### `g:deoplete#sources#go#pointer`
+#### Support pointer match
+
+| **Default**  | `0`   |
+|--------------|-------|
+| **Required** | *Any* |
+| **Type**     | int   |
+| **Example**  | `1`   |
+
+Support pointer(`*`) match.  
+Example are bellow code. `|` is cursor.
+
+```go
+type Foo struct {
+  FooName string
+}
+
+func NewFoo() *Foo {
+  return &Foo{}
+}
+
+func (f *|
+```
 
 ### `g:deoplete#sources#go#use_cache` `g:deoplete#sources#go#json_directory`
 #### Static json caching

@@ -38,6 +38,8 @@ class Source(Base):
             self.vim.vars['deoplete#sources#go#package_dot']
         self.sort_class = \
             self.vim.vars['deoplete#sources#go#sort_class']
+        self.pointer = \
+            self.vim.vars['deoplete#sources#go#pointer']
         self.use_cache = \
             self.vim.vars['deoplete#sources#go#use_cache']
         self.json_directory = \
@@ -48,7 +50,7 @@ class Source(Base):
             self.vim.vars['deoplete#sources#go#cgo']
 
         if self.cgo:
-            self.complete_pos = re.compile(r'\w*$|(?<=C.)*$|(?<=")[./\-\w]*$')
+            self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
             load_external_module(__file__, 'clang')
             import clang.cindex as clang
 
@@ -68,6 +70,9 @@ class Source(Base):
             self.cgo_cache, self.cgo_headers = dict(), None
         else:
             self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
+
+        if self.pointer:
+            self.complete_pos = re.compile(self.complete_pos.pattern + r'|\*$')
 
     def on_event(self, context):
         if context['event'] == 'BufWinEnter':
@@ -123,6 +128,10 @@ class Source(Base):
 
                 if _class == 'package' and self.package_dot:
                     word += '.'
+                if self.pointer and \
+                        str(context['input']
+                            [context['complete_position']:]) == '*':
+                    word = '*' + word
 
                 candidates = dict(word=word,
                                   abbr=abbr,
