@@ -150,8 +150,8 @@ class Source(Base):
         if not self.use_cache:
             return None
 
-        m = re.search(r'(?:\b[\w\d]\w)\w+(?=\.)', context['input'])
-        package = str(m.group(0)) if m else ''
+        m = re.findall(r'(?:\b[\w\d]+)(?=\.)', context['input'])
+        package = str(m[-1]) if m else ''
         current_import = self.parse_import_package(buffer)
         import_package = [x['package'] for x in current_import]
 
