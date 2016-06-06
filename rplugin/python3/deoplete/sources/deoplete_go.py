@@ -2,11 +2,10 @@ import os
 import re
 import subprocess
 
-from .base import Base
+from collections import OrderedDict
 
-from deoplete.util import charpos2bytepos
-from deoplete.util import error
-from deoplete.util import load_external_module
+from .base import Base
+from deoplete.util import charpos2bytepos, error, load_external_module
 
 load_external_module(__file__, 'sources/deoplete_go')
 from clang_index import Clang_Index
