@@ -136,7 +136,6 @@ class Source(Base):
                                   abbr=abbr,
                                   kind=kind,
                                   info=info,
-                                  menu=self.mark,
                                   dup=1)
 
                 if not self.sort_class or _class == 'import':
