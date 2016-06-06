@@ -45,6 +45,8 @@ class Source(Base):
             self.vim.vars['deoplete#sources#go#json_directory']
         self.debug_enabled = \
             self.vim.vars.get('deoplete#sources#go#debug', 0)
+        self.use_on_event = \
+            self.vim.vars['deoplete#sources#go#on_event']
         self.cgo = \
             self.vim.vars['deoplete#sources#go#cgo']
 
@@ -74,7 +76,7 @@ class Source(Base):
             self.complete_pos = re.compile(self.complete_pos.pattern + r'|\*$')
 
     def on_event(self, context):
-        if context['event'] == 'BufWinEnter':
+        if self.use_on_event and context['event'] == 'BufWinEnter':
             buffer = self.vim.current.buffer
             context['complete_position'] = self.vim.current.window.cursor[1]
 

@@ -27,3 +27,6 @@ let g:deoplete#sources#go#json_directory =
 
 let g:deoplete#sources#go#cgo = 
       \ get(g:, 'deoplete#sources#go#cgo', 0)
+
+let g:deoplete#sources#go#on_event = 
+      \ get(g:, 'deoplete#sources#go#on_event', 0)
