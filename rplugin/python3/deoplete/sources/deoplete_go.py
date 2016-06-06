@@ -109,13 +109,7 @@ class Source(Base):
                 return []
 
             if self.sort_class:
-                class_dict = {
-                    'package': [],
-                    'func': [],
-                    'type': [],
-                    'var': [],
-                    'const': [],
-                }
+                class_dict = OrderedDict((x, []) for x in self.sort_class)
 
             out = []
             sep = ' '
@@ -145,11 +139,9 @@ class Source(Base):
                 else:
                     class_dict[_class].append(candidates)
 
-            # append with sort by complete['class']
             if self.sort_class:
-                for c in self.sort_class:
-                    for x in class_dict[c]:
-                        out.append(x)
+                for v in class_dict.values():
+                    out += v
 
             return out
         except Exception:
