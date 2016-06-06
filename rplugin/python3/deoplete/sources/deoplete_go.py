@@ -186,7 +186,7 @@ class Source(Base):
         column = context['complete_position']
 
         offset = self.vim.call('line2byte', line) + \
-            charpos2bytepos(self.vim, context['input'][: column],
+            charpos2bytepos('utf-8', context['input'][: column],
                             column) - 1
         source = '\n'.join(buffer).encode()
 
