@@ -1,8 +1,15 @@
-./benchmark
-./build
-./images
-./plugin
-./*.tags
+# directories
+benchmark
+build
+images
+plugin
+data
 
-# json tarballs
+# files
+.DS_Store
+*.tags
 *.tar.gz
+Dockerfile
+
+!data/gen_json.py
+!data/template.go

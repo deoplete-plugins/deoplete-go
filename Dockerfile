@@ -1,6 +1,8 @@
 FROM golang:1.6.2-alpine
 MAINTAINER zchee <k@zchee.io>
 
+ENV GOLANG_VERSION 1.6.2
+
 RUN set -ex \
 	&& apk add --no-cache --virtual .build-deps \
 		make \
@@ -10,11 +12,11 @@ RUN set -ex \
 	\
 	&& go get -u -v github.com/nsf/gocode
 
-COPY ./ /deoplete-go
+COPY . /deoplete-go
 
 RUN cd /deoplete-go \
 	&& make gen_json \
 	\
-	&& tar cf json_1.6.2_linux_amd64.tar.gz ./data/json/1.6.2/linux_amd64
+	&& tar cf "json_linux_amd64.tar.gz" "./data/json/$GOLANG_VERSION/linux_amd64"
 
-CMD ["cat", "/deoplete-go/json_1.6.2_linux_amd64.tar.gz"]
+CMD ["cat", "/deoplete-go/json_linux_amd64.tar.gz"]
