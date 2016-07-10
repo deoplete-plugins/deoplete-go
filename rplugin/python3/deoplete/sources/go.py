@@ -32,7 +32,7 @@ class Source(Base):
 
         buf = self.vim.current.buffer
         offset = self.vim.call('line2byte', line) + charpos2bytepos(
-            self.vim, context['input'][: column], column)
+            context['encoding'], context['input'][: column], column)
         source = '\n'.join(buf).encode()
 
         process = subprocess.Popen([self.GoCodeBinary(),
