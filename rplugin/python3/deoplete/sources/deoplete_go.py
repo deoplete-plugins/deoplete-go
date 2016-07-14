@@ -136,7 +136,7 @@ class Source(Base):
 
                 if not self.sort_class or _class == 'import':
                     out.append(candidates)
-                else:
+                elif _class in class_dict.keys():
                     class_dict[_class].append(candidates)
 
             if self.sort_class:
