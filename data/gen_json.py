@@ -54,7 +54,8 @@ def main():
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
-        pkg_dir = os.path.join(out_dir, ''.join(library))
+        libdir = str(pkg).rsplit('/', 1)[0]
+        pkg_dir = os.path.join(out_dir, libdir)
         if not os.path.exists(pkg_dir):
             os.makedirs(pkg_dir)
         out_path = \
