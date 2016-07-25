@@ -41,6 +41,7 @@ data/stdlib.txt:
 
 gen_json: data/stdlib.txt
 	$(GOCODE) close
+	$(GOCODE) set package-lookup-mode go
 	cd ./data && ./gen_json.py $(GOOS) $(GOARCH)
 
 docker/build:
