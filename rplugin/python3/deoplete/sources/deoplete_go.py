@@ -29,58 +29,85 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
-        self.complete_pos = None
+    def on_init(self, context):
+        vars = context['vars']
 
-        self.gocode_binary = \
-            self.vim.vars['deoplete#sources#go#gocode_binary']
-        self.package_dot = \
-            self.vim.vars['deoplete#sources#go#package_dot']
-        self.sort_class = \
-            self.vim.vars['deoplete#sources#go#sort_class']
-        self.pointer = \
-            self.vim.vars['deoplete#sources#go#pointer']
-        self.use_cache = \
-            self.vim.vars['deoplete#sources#go#use_cache']
-        self.json_directory = \
-            self.vim.vars['deoplete#sources#go#json_directory']
-        self.debug_enabled = \
-            self.vim.vars.get('deoplete#sources#go#debug', 0)
-        self.use_on_event = \
-            self.vim.vars['deoplete#sources#go#on_event']
-        self.cgo = \
-            self.vim.vars['deoplete#sources#go#cgo']
+        self.gocode_binary = vars.get(
+            'deoplete#sources#go#gocode_binary',
+            ''
+        )
+        self.package_dot = vars.get(
+            'deoplete#sources#go#package_dot',
+            False
+        )
+        self.sort_class = vars.get(
+            'deoplete#sources#go#sort_class',
+            []
+        )
+        self.pointer = vars.get(
+            'deoplete#sources#go#pointer',
+            False
+        )
+        self.use_cache = vars.get(
+            'deoplete#sources#go#use_cache',
+            False
+        )
+        self.json_directory = vars.get(
+            'deoplete#sources#go#json_directory',
+            ''
+        )
+        self.use_on_event = vars.get(
+            'deoplete#sources#go#on_event',
+            False
+        )
+        self.cgo = vars.get(
+            'deoplete#sources#go#cgo',
+            False
+        )
+        self.debug_enabled = vars.get(
+            'deoplete#sources#go#debug',
+            False
+        )
 
-        if self.cgo:
-            self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
-            load_external_module(__file__, 'clang')
-            import clang.cindex as clang
-
-            self.libclang_path = \
-                self.vim.vars.get('deoplete#sources#go#cgo#libclang_path', '')
-            self.cgo_std = \
-                ['-std',
-                 self.vim.vars.get('deoplete#sources#go#cgo#std', 'c11'),
-                 '-x', 'c']
-
-            if not clang.Config.loaded:
-                clang.Config.set_library_file(self.libclang_path)
-                clang.Config.set_compatibility_check(False)
-
-            self.index = clang.Index.create(0)
-
-            self.cgo_cache, self.cgo_headers = dict(), None
-        else:
-            self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
+        self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
         if self.pointer:
             self.complete_pos = re.compile(self.complete_pos.pattern + r'|\*$')
 
-    def on_event(self, context):
-        if self.use_on_event and context['event'] == 'BufWinEnter':
-            buffer = self.vim.current.buffer
-            context['complete_position'] = self.vim.current.window.cursor[1]
+        if self.cgo:
+            load_external_module(__file__, 'clang')
+            import clang.cindex as clang
 
-            self.get_complete_result(buffer, context, kill=True)
+            self.libclang_path = vars.get(
+                'deoplete#sources#go#cgo#libclang_path',
+                ''
+            )
+            if self.libclang_path == '':
+                return
+            self.cgo_std = ['-std',
+                            vars.get('deoplete#sources#go#cgo#std', 'c11'),
+                            '-x', 'c']
+
+            if not clang.Config.loaded or \
+                    clang.Config.library_path is not None and \
+                    clang.Config.library_path != self.libclang_path:
+                clang.Config.set_library_file(self.libclang_path)
+                clang.Config.set_compatibility_check(False)
+
+            self.index = clang.Index.create(0)
+            self.cgo_cache, self.cgo_headers = dict(), None
+
+    def on_event(self, context):
+        if self.use_on_event and context['event'] == 'BufRead':
+            # Note that dummy execute for make cache
+            try:
+                buffer = self.vim.current.buffer
+                context['complete_position'] = \
+                    self.vim.current.window.cursor[1]
+                self.get_complete_result(buffer, context, kill=True)
+            except Exception:
+                # Ignore the error
+                pass
 
     def get_complete_position(self, context):
         m = self.complete_pos.search(context['input'])
