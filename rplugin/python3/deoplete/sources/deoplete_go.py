@@ -95,6 +95,7 @@ class Source(Base):
                 clang.Config.set_compatibility_check(False)
 
             self.index = clang.Index.create(0)
+            self.cgo_complete_pattern = re.compile(r'[^\W\d]*C\.$')
             self.cgo_cache, self.cgo_headers = dict(), None
 
     def on_event(self, context):
@@ -116,7 +117,7 @@ class Source(Base):
     def gather_candidates(self, context):
         buffer = self.vim.current.buffer
 
-        if self.cgo and re.search(r'[^\W\d]*C\.', context['input']):
+        if self.cgo and self.cgo_complete_pattern.search(context['input']):
             if self.cgo_get_include_header(buffer)[0] == 0:
                 pass
 
