@@ -253,7 +253,7 @@ class Source(Base):
         count = 0
 
         for b in buffer:
-            m = re.search(r'(^#include\s[<"][^>]+[>"])$', b)
+            m = re.search(r'#include\s[<"]([^>"]+)[>"]', b)
 
             if m:
                 headers.append(m.group(1))
