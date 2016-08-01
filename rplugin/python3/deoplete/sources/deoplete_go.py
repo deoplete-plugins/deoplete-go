@@ -84,9 +84,7 @@ class Source(Base):
             )
             if self.libclang_path == '':
                 return
-            self.cgo_std = ['-std',
-                            vars.get('deoplete#sources#go#cgo#std', 'c11'),
-                            '-x', 'c']
+            self.std = vars.get('deoplete#sources#go#cgo#std', 'c11')
 
             if not clang.Config.loaded or \
                     clang.Config.library_path is not None and \
@@ -256,14 +254,17 @@ class Source(Base):
         return packages
 
     def cgo_get_inline_source(self, buffer):
-        if 'import "C"' in buffer:
-            pos_import_c = list(buffer).index('import "C"')
-            c_inline = buffer[:pos_import_c]
-            if c_inline[len(c_inline) - 1] == '*/':
-                comment_start = \
-                    next(i for i, v in zip(range(len(c_inline) - 1, 0, -1),
-                                           reversed(c_inline)) if v == '/*')
-                c_inline = c_inline[comment_start + 1:len(c_inline) - 1]
+        if 'import "C"' not in buffer:
+               return (0, '')
+
+        pos_import_c = list(buffer).index('import "C"')
+        c_inline = buffer[:pos_import_c]
+
+        if c_inline[len(c_inline) - 1] == '*/':
+            comment_start = \
+                next(i for i, v in zip(range(len(c_inline) - 1, 0, -1),
+                                       reversed(c_inline)) if v == '/*')
+            c_inline = c_inline[comment_start + 1:len(c_inline) - 1]
 
         return (len(c_inline), '\n'.join(c_inline))
 
@@ -297,8 +298,26 @@ class Source(Base):
 
         return completion
 
+    def get_pkgconfig(self, packages):
+        out = []
+        for pkg in packages:
+            flag = os.popen("pkg-config " + pkg + " --cflags --libs").read()
+            out += flag.rstrip().split(' ')
+        return out
+
     def cgo_complete(self, line_count, source):
-        fname = 'fake.c'
+        cgo_pattern = r'#cgo (\S+): (.+)'
+        flags = set()
+        for key, value in re.findall(cgo_pattern, source):
+            if key == 'pkg-config':
+                for flag in self.get_pkgconfig(value.split()):
+                    flags.add(flag)
+            else:
+                flags.add('%s=%s' % (key, value))
+
+        cgo_flags = ['-std', self.std, '-x', 'c'] + list(flags)
+
+        fname = 'cgo_inline.c'
         main = """
 int main(void) {
 }
@@ -318,7 +337,7 @@ int main(void) {
 
         # Index.parse(path, args=None, unsaved_files=None, options = 0)
         tu = self.index.parse(fname,
-                              self.cgo_std,
+                              cgo_flags,
                               unsaved_files=files,
                               options=options)
 
