@@ -1,7 +1,9 @@
 package test
 
 /*
+#cgo pkg-config: python3
 #include <stdlib.h>
+#include <Python.h>
 */
 import "C"
 import (
@@ -12,4 +14,5 @@ import (
 func main() {
 	fmt.Printf()
 	os.Rename()
+	C
 }
