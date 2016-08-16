@@ -29,10 +29,10 @@ all : build
 build: rplugin/python3/deoplete/ujson $(TARGET)
 	cp $(shell find $(CURRENT)/build -name ujson*.so) $(RPLUGIN_HOME)/deoplete/ujson.so
 
-rplugin/python3/deoplete/ujson:
+rplugin/python3/deoplete/ujson.git:
 	$(GIT) submodule update --init
 
-$(TARGET): rplugin/python3/deoplete/ujson
+$(TARGET): rplugin/python3/deoplete/ujson.git
 	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
 
 data/stdlib.txt:
