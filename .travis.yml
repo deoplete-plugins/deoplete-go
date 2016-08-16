@@ -22,7 +22,7 @@ before_install:
   - cat /etc/lsb-release
 
 install:
-  - make build
+  - make
   - make lint/install_modules
 
 script:
