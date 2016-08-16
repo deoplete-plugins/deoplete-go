@@ -8,7 +8,7 @@ from .base import Base
 from deoplete.util import charpos2bytepos, error, load_external_module
 
 load_external_module(__file__, 'sources/deoplete_go')
-from clang_index import Clang_Index
+from cgo import cgo
 from stdlib import stdlib
 
 try:
@@ -85,24 +85,27 @@ class Source(Base):
             if self.libclang_path == '':
                 return
 
-            self.std = vars.get('deoplete#sources#go#cgo#std', 'c11')
-            self.sort_algo = vars.get('deoplete#sources#go#cgo#sort_algo', '')
+            self.cgo_options = {
+                'std': vars.get('deoplete#sources#go#cgo#std', 'c11'),
+                'sort_algo': vars.get('deoplete#sources#cgo#sort_algo', None)
+            }
 
             if not clang.Config.loaded and \
-                    clang.Config.library_path is not None and \
                     clang.Config.library_path != self.libclang_path:
                 clang.Config.set_library_file(self.libclang_path)
                 clang.Config.set_compatibility_check(False)
 
+            # Set 'C.' complete pattern
             self.cgo_complete_pattern = re.compile(r'[^\W\d]*C\.')
             # Create clang.cindex.Index database
             self.index = clang.Index.create(0)
-            # for inmemory-cache
+            # initialize in-memory cache
             self.cgo_cache, self.cgo_inline_source = dict(), None
 
     def on_event(self, context):
-        if self.use_on_event and context['event'] == 'BufRead':
-            # Note that dummy execute for make cache
+        # Dummy execute the gocode for gocode's in-memory cache
+        if context['filetype'] == 'go' and \
+                self.use_on_event and context['event'] == 'BufRead':
             try:
                 buffer = self.vim.current.buffer
                 context['complete_position'] = \
@@ -119,18 +122,9 @@ class Source(Base):
     def gather_candidates(self, context):
         buffer = self.vim.current.buffer
 
-        # When enabled cgo option and match the cgo_complete_pattern
+        # If enabled self.cgo, and matched self.cgo_complete_pattern pattern
         if self.cgo and self.cgo_complete_pattern.search(context['input']):
-            # No include header
-            if self.cgo_get_inline_source(buffer)[0] == 0:
-                pass
-            # Use inline-memory(self.cgo_headers) cacahe
-            elif self.cgo_inline_source == self.cgo_get_inline_source(buffer)[1]:
-                return self.cgo_cache[self.cgo_inline_source]
-            # return candidates use libclang-python3
-            else:
-                count, self.cgo_inline_source = self.cgo_get_inline_source(buffer)
-                return self.cgo_complete(count, self.cgo_inline_source)
+            return self.cgo_completion(buffer)
 
         result = self.get_cache(context, buffer)
         if result is None:
@@ -179,6 +173,26 @@ class Source(Base):
             return out
         except Exception:
             return []
+
+    def cgo_completion(self, buffer):
+        # No include header
+        if cgo.get_inline_source(buffer)[0] == 0:
+            return
+
+        count, inline_source = cgo.get_inline_source(buffer)
+
+        # exists 'self.cgo_inline_source', same inline sources and
+        # already cached cgo complete candidates
+        if self.cgo_inline_source is not None and \
+                self.cgo_inline_source == inline_source and \
+                self.cgo_cache[self.cgo_inline_source]:
+            # Use in-memory(self.cgo_headers) cacahe
+            return self.cgo_cache[self.cgo_inline_source]
+        else:
+            self.cgo_inline_source = inline_source
+            # return candidates use libclang-python3
+            return cgo.complete(self.index, self.cgo_cache, self.cgo_options,
+                                count, self.cgo_inline_source)
 
     def get_cache(self, context, buffer):
         if not self.use_cache:
@@ -254,176 +268,6 @@ class Source(Base):
                 else:
                     packages.append(dict(library='none', package=package_name))
         return packages
-
-    def cgo_get_inline_source(self, buffer):
-        if 'import "C"' not in buffer:
-               return (0, '')
-
-        pos_import_c = list(buffer).index('import "C"')
-        c_inline = buffer[:pos_import_c]
-
-        if c_inline[len(c_inline) - 1] == '*/':
-            comment_start = \
-                next(i for i, v in zip(range(len(c_inline) - 1, 0, -1),
-                                       reversed(c_inline)) if v == '/*')
-            c_inline = c_inline[comment_start + 1:len(c_inline) - 1]
-
-        return (len(c_inline), '\n'.join(c_inline))
-
-    def cgo_parse_candidates(self, result):
-        completion = {'dup': 1, 'word': ''}
-        _type = ""
-        word = ""
-        placeholder = ""
-        sep = ' '
-
-        for chunk in [x for x in result.string if x.spelling]:
-            chunk_spelling = chunk.spelling
-
-            # ignore inline fake main(void), and '_' prefix function
-            if chunk_spelling == 'main' or chunk_spelling.find('_') is 0:
-                return completion
-
-            if chunk.isKindTypedText():
-                word += chunk_spelling
-                placeholder += chunk_spelling
-            elif chunk.isKindResultType():
-                _type += chunk_spelling
-            else:
-                placeholder += chunk_spelling
-
-        completion['word'] = word
-        completion['abbr'] = completion['info'] = placeholder + sep + _type
-
-        completion['kind'] = \
-            ' '.join([(Clang_Index.kinds[result.cursorKind]
-                       if (result.cursorKind in Clang_Index.kinds) else
-                       str(result.cursorKind))])
-
-        return completion
-
-    def get_pkgconfig(self, packages):
-        out = []
-        for pkg in packages:
-            flag = os.popen("pkg-config " + pkg + " --cflags --libs").read()
-            out += flag.rstrip().split(' ')
-        return out
-
-    def cgo_complete(self, line_count, source):
-        cgo_pattern = r'#cgo (\S+): (.+)'
-        flags = set()
-        for key, value in re.findall(cgo_pattern, source):
-            if key == 'pkg-config':
-                for flag in self.get_pkgconfig(value.split()):
-                    flags.add(flag)
-            else:
-                flags.add('%s=%s' % (key, value))
-
-        cgo_flags = ['-std', self.std, '-x', 'c'] + list(flags)
-
-        fname = 'cgo_inline.c'
-        main = """
-int main(void) {
-}
-"""
-        template = source + main
-        files = [(fname, template)]
-
-        # clang.TranslationUnit
-        # PARSE_NONE = 0
-        # PARSE_DETAILED_PROCESSING_RECORD = 1
-        # PARSE_INCOMPLETE = 2
-        # PARSE_PRECOMPILED_PREAMBLE = 4
-        # PARSE_CACHE_COMPLETION_RESULTS = 8
-        # PARSE_SKIP_FUNCTION_BODIES = 64
-        # PARSE_INCLUDE_BRIEF_COMMENTS_IN_CODE_COMPLETION = 128
-        options = 15
-
-        # Index.parse(path, args=None, unsaved_files=None, options = 0)
-        tu = self.index.parse(fname,
-                              cgo_flags,
-                              unsaved_files=files,
-                              options=options)
-
-        # TranslationUnit.codeComplete(path, line, column, ...)
-        cr = tu.codeComplete(fname, (line_count + 2), 1,
-                             unsaved_files=files,
-                             include_macros=False,
-                             include_code_patterns=False,
-                             include_brief_comments=False)
-
-
-        if self.sort_algo == 'priority':
-            results = sorted(cr.results, key=self.get_priority)
-        elif self.sort_algo == 'alphabetical':
-            results = sorted(cr.results, key=self.get_abbrevation)
-        else:
-            results = cr.results
-
-        # Go string to C string
-        #  The C string is allocated in the C heap using malloc.
-        #  It is the caller's responsibility to arrange for it to be
-        #  freed, such as by calling C.free (be sure to include stdlib.h
-        #  if C.free is needed).
-        #  func C.CString(string) *C.char
-        #
-        # Go []byte slice to C array
-        #  The C array is allocated in the C heap using malloc.
-        #  It is the caller's responsibility to arrange for it to be
-        #  freed, such as by calling C.free (be sure to include stdlib.h
-        #  if C.free is needed).
-        #  func C.CBytes([]byte) unsafe.Pointer
-        #
-        # C string to Go string
-        #  func C.GoString(*C.char) string
-        #
-        # C data with explicit length to Go string
-        #  func C.GoStringN(*C.char, C.int) string
-        #
-        # C data with explicit length to Go []byte
-        #  func C.GoBytes(unsafe.Pointer, C.int) []byte
-        self.cgo_cache[source] = [
-            {'word': 'CString',
-             'abbr': 'CString(string) *C.char',
-             'info': 'CString(string) *C.char',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'CBytes',
-             'abbr': 'CBytes([]byte) unsafe.Pointer',
-             'info': 'CBytes([]byte) unsafe.Pointer',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoString',
-             'abbr': 'GoString(*C.char) string',
-             'info': 'GoString(*C.char) string',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoStringN',
-             'abbr': 'GoStringN(*C.char, C.int) string',
-             'info': 'GoStringN(*C.char, C.int) string',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoBytes',
-             'abbr': 'GoBytes(unsafe.Pointer, C.int) []byte',
-             'info': 'GoBytes(unsafe.Pointer, C.int) []byte',
-             'kind': 'function',
-             'dup': 1},
-        ]
-        self.cgo_cache[source] += \
-            list(map(self.cgo_parse_candidates, results))
-        return self.cgo_cache[source]
-
-    def get_priority(self, x):
-        return x.string.priority
-
-    def get_abbr(self, strings):
-        for chunks in strings:
-            if chunks.isKindTypedText():
-                return chunks.spelling
-        return ""
-
-    def get_abbrevation(self, x):
-        return self.get_abbr(x.string).lower()
 
     def find_gocode_binary(self):
         try:
