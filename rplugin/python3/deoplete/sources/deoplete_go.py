@@ -12,7 +12,7 @@ from cgo import cgo
 from stdlib import stdlib
 
 try:
-    load_external_module(__file__, 'ujson')
+    load_external_module(__file__, '')
     from ujson import loads
 except ImportError:
     from json import loads
