@@ -1,7 +1,7 @@
 CURRENT := $(shell pwd)
 RPLUGIN_HOME := $(CURRENT)/rplugin/python3
 RPLUGIN_PATH := $(RPLUGIN_HOME)/deoplete/sources
-MODULE_NAME := deoplete_go.py deoplete_go/stdlib.py
+MODULE_NAME := deoplete_go.py deoplete_go/cgo.py deoplete_go/stdlib.py
 
 TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so 
 
