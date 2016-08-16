@@ -1,9 +1,9 @@
-TARGET = ./rplugin/python3/deoplete/ujson.so
+TARGET = rplugin/python3/deoplete/ujson.so
 
 CURRENT := $(shell pwd)
 RPLUGIN_HOME := $(CURRENT)/rplugin/python3
-RPLUGIN_PATH := $(CURRENT)/rplugin/python3/deoplete/sources/
-MODULE_NAME := deoplete_go.py
+RPLUGIN_PATH := $(RPLUGIN_HOME)/deoplete/sources
+MODULE_NAME := deoplete_go.py deoplete_go/stdlib.py
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
@@ -22,15 +22,18 @@ ifneq ($(PACKAGE),unsafe)
 	PACKAGE += unsafe
 endif
 
+PIP_FLAGS ?= 
 
-all : $(TARGET)
+all : build
 
-build/:
-	$(GIT) submodule update --init
-	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
-
-rplugin/python3/deoplete/ujson.so: build/
+build: rplugin/python3/deoplete/ujson $(TARGET)
 	cp $(shell find $(CURRENT)/build -name ujson*.so) $(RPLUGIN_HOME)/deoplete/ujson.so
+
+rplugin/python3/deoplete/ujson:
+	$(GIT) submodule update --init
+
+$(TARGET): rplugin/python3/deoplete/ujson
+	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
 
 data/stdlib.txt:
 	go tool api -contexts $(GOOS)-$(GOARCH)-cgo | sed -e s/,//g | awk '{print $$2}' | uniq > ./data/stdlib.txt
@@ -38,6 +41,7 @@ data/stdlib.txt:
 		echo $$pkg >> ./data/stdlib.txt; \
 	done
 	mv ./data/stdlib.txt ./data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt
+
 
 gen_json: data/stdlib.txt
 	$(GOCODE) close
@@ -55,17 +59,18 @@ docker/gen_json: docker/gen_stdlib
 	tar xf ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
 	mv ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz ./data/json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
 
+
 test: lint
 
-lint: flake8
+lint: lint/flake8
 
-flake8: test_modules
-	@flake8 --config=$(PWD)/.flake8 ${RPLUGIN_PATH}${MODULE_NAME} || true
+lint/flake8:
+	flake8 --config=$(PWD)/.flake8 $(foreach file,$(MODULE_NAME),$(RPLUGIN_PATH)/$(file)) || true
 
-test_modules:
-	@pip3 -q install -U -r./tests/requirements.txt
+lint/test-modules:
+	pip3 -q install -U $(PIP_FLAGS) -r ./tests/requirements.txt
 
 clean:
-	$(RM) -rf $(CURRENT)/build $(RPLUGIN_HOME)/deoplete/ujson.so
+	$(RM) -r $(CURRENT)/build $(CURRENT)/$(TARGET)
 
-.PHONY: test lint flake8 test_modules clean
+.PHONY: test lint clean
