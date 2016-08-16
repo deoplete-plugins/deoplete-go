@@ -23,6 +23,7 @@ before_install:
 
 install:
   - make build
+  - make lint/install_modules
 
 script:
   - make test

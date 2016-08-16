@@ -72,7 +72,7 @@ lint: lint/flake8
 lint/flake8:
 	flake8 --config=$(PWD)/.flake8 $(foreach file,$(MODULE_NAME),$(RPLUGIN_PATH)/$(file)) || true
 
-lint/test-modules:
+lint/install_modules:
 	pip3 -q install -U $(PIP_FLAGS) -r ./tests/requirements.txt
 
 clean:
