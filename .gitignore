@@ -62,5 +62,11 @@ target/
 # json tarballs
 *.tar.gz
 
+
+# deoplete-go original
+
 # remote plugin specs
 .-rplugin~
+# stdlib.txt for devel
+stdlib-devel_darwin_amd64.txt
+stdlib-devel_linux_amd64.txt
