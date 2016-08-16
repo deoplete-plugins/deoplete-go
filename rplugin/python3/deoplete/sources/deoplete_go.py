@@ -32,42 +32,17 @@ class Source(Base):
     def on_init(self, context):
         vars = context['vars']
 
-        self.gocode_binary = vars.get(
-            'deoplete#sources#go#gocode_binary',
-            ''
-        )
-        self.package_dot = vars.get(
-            'deoplete#sources#go#package_dot',
-            False
-        )
-        self.sort_class = vars.get(
-            'deoplete#sources#go#sort_class',
-            []
-        )
-        self.pointer = vars.get(
-            'deoplete#sources#go#pointer',
-            False
-        )
-        self.use_cache = vars.get(
-            'deoplete#sources#go#use_cache',
-            False
-        )
-        self.json_directory = vars.get(
-            'deoplete#sources#go#json_directory',
-            ''
-        )
-        self.use_on_event = vars.get(
-            'deoplete#sources#go#on_event',
-            False
-        )
-        self.cgo = vars.get(
-            'deoplete#sources#go#cgo',
-            False
-        )
-        self.debug_enabled = vars.get(
-            'deoplete#sources#go#debug',
-            False
-        )
+        self.gocode_binary = vars.get('deoplete#sources#go#gocode_binary', '')
+        self.loaded_gocode_binary = False
+        self.package_dot = vars.get('deoplete#sources#go#package_dot', False)
+        self.sort_class = vars.get('deoplete#sources#go#sort_class', [])
+        self.pointer = vars.get('deoplete#sources#go#pointer', False)
+        self.use_cache = vars.get('deoplete#sources#go#use_cache', False)
+        self.json_directory = \
+                vars.get('deoplete#sources#go#json_directory', '')
+        self.use_on_event = vars.get('deoplete#sources#go#on_event', False)
+        self.cgo = vars.get('deoplete#sources#go#cgo', False)
+        self.debug_enabled = vars.get('deoplete#sources#go#debug', False)
 
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
@@ -78,10 +53,8 @@ class Source(Base):
             load_external_module(__file__, 'clang')
             import clang.cindex as clang
 
-            self.libclang_path = vars.get(
-                'deoplete#sources#go#cgo#libclang_path',
-                ''
-            )
+            self.libclang_path = \
+                    vars.get( 'deoplete#sources#go#cgo#libclang_path', '')
             if self.libclang_path == '':
                 return
 
@@ -155,11 +128,8 @@ class Source(Base):
                             [context['complete_position']:]) == '*':
                     word = '*' + word
 
-                candidates = dict(word=word,
-                                  abbr=abbr,
-                                  kind=kind,
-                                  info=info,
-                                  dup=1)
+                candidates = dict(
+                    word=word, abbr=abbr, kind=kind, info=info, dup=1)
 
                 if not self.sort_class or _class == 'import':
                     out.append(candidates)
@@ -263,15 +233,20 @@ class Source(Base):
                     library = '/'.join(full_package_name[:len(
                         full_package_name) - 1]),
 
-                    packages.append(dict(library=library,
-                                         package=package_name))
+                    packages.append(
+                        dict(
+                            library=library, package=package_name))
                 else:
                     packages.append(dict(library='none', package=package_name))
         return packages
 
     def find_gocode_binary(self):
+        if self.gocode_binary != '' and self.loaded_gocode_binary:
+            return self.gocode_binary
+
         try:
             if os.path.isfile(self.gocode_binary):
+                self.loaded_gocode_binary = True
                 return self.gocode_binary
             else:
                 raise
