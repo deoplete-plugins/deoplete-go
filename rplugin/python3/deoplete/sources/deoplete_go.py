@@ -39,7 +39,7 @@ class Source(Base):
         self.pointer = vars.get('deoplete#sources#go#pointer', False)
         self.use_cache = vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
-                vars.get('deoplete#sources#go#json_directory', '')
+            vars.get('deoplete#sources#go#json_directory', '')
         self.use_on_event = vars.get('deoplete#sources#go#on_event', False)
         self.cgo = vars.get('deoplete#sources#go#cgo', False)
         self.debug_enabled = vars.get('deoplete#sources#go#debug', False)
@@ -54,7 +54,7 @@ class Source(Base):
             import clang.cindex as clang
 
             self.libclang_path = \
-                    vars.get( 'deoplete#sources#go#cgo#libclang_path', '')
+                vars.get('deoplete#sources#go#cgo#libclang_path', '')
             if self.libclang_path == '':
                 return
 
