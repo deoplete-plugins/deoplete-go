@@ -84,9 +84,11 @@ class Source(Base):
             )
             if self.libclang_path == '':
                 return
-            self.std = vars.get('deoplete#sources#go#cgo#std', 'c11')
 
-            if not clang.Config.loaded or \
+            self.std = vars.get('deoplete#sources#go#cgo#std', 'c11')
+            self.sort_algo = vars.get('deoplete#sources#go#cgo#sort_algo', '')
+
+            if not clang.Config.loaded and \
                     clang.Config.library_path is not None and \
                     clang.Config.library_path != self.libclang_path:
                 clang.Config.set_library_file(self.libclang_path)
@@ -269,7 +271,7 @@ class Source(Base):
         return (len(c_inline), '\n'.join(c_inline))
 
     def cgo_parse_candidates(self, result):
-        completion = {'dup': 1}
+        completion = {'dup': 1, 'word': ''}
         _type = ""
         word = ""
         placeholder = ""
@@ -278,11 +280,13 @@ class Source(Base):
         for chunk in [x for x in result.string if x.spelling]:
             chunk_spelling = chunk.spelling
 
-            # ignore fake.c main(void) function
-            if chunk.isKindTypedText() and chunk_spelling != 'main':
+            # ignore inline fake main(void), and '_' prefix function
+            if chunk_spelling == 'main' or chunk_spelling.find('_') is 0:
+                return completion
+
+            if chunk.isKindTypedText():
                 word += chunk_spelling
                 placeholder += chunk_spelling
-                continue
             elif chunk.isKindResultType():
                 _type += chunk_spelling
             else:
@@ -342,12 +346,19 @@ int main(void) {
                               options=options)
 
         # TranslationUnit.codeComplete(path, line, column, ...)
-        cr = tu.codeComplete(fname, (line_count + 2),
-                             1,
+        cr = tu.codeComplete(fname, (line_count + 2), 1,
                              unsaved_files=files,
                              include_macros=False,
                              include_code_patterns=False,
                              include_brief_comments=False)
+
+
+        if self.sort_algo == 'priority':
+            results = sorted(cr.results, key=self.get_priority)
+        elif self.sort_algo == 'alphabetical':
+            results = sorted(cr.results, key=self.get_abbrevation)
+        else:
+            results = cr.results
 
         # Go string to C string
         #  The C string is allocated in the C heap using malloc.
@@ -399,8 +410,20 @@ int main(void) {
              'dup': 1},
         ]
         self.cgo_cache[source] += \
-            list(map(self.cgo_parse_candidates, cr.results))
+            list(map(self.cgo_parse_candidates, results))
         return self.cgo_cache[source]
+
+    def get_priority(self, x):
+        return x.string.priority
+
+    def get_abbr(self, strings):
+        for chunks in strings:
+            if chunks.isKindTypedText():
+                return chunks.spelling
+        return ""
+
+    def get_abbrevation(self, x):
+        return self.get_abbr(x.string).lower()
 
     def find_gocode_binary(self):
         try:
