@@ -22,7 +22,7 @@ before_install:
   - cat /etc/lsb-release
 
 install:
-  - pip3 install -r ./tests/requirements.txt
+  - make build
 
 script:
   - make test
