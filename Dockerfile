@@ -1,7 +1,7 @@
-FROM golang:1.6.2-alpine
+FROM golang:1.7.0-alpine
 MAINTAINER zchee <k@zchee.io>
 
-ENV GOLANG_VERSION 1.6.2
+ENV GOLANG_VERSION 1.7
 
 RUN set -ex \
 	&& apk add --no-cache --virtual .build-deps \

@@ -7,7 +7,7 @@ TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
-GO_STABLE_VERSION = 1.6.2
+GO_STABLE_VERSION = 1.7
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
 
@@ -54,7 +54,7 @@ docker/build:
 	$(DOCKER) build -t $(DOKCER_IMAGE) .
 
 docker/gen_stdlib: docker/build
-	$(DOCKER) run --rm $(DOKCER_IMAGE) cat /deoplete-go/data/stdlib-1.6.2_linux_amd64.txt > ./data/stdlib-1.6.2_linux_amd64.txt
+	$(DOCKER) run --rm $(DOKCER_IMAGE) cat /deoplete-go/data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt > ./data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt
 
 docker/gen_json: docker/gen_stdlib
 	$(DOCKER) run --rm $(DOKCER_IMAGE) > ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
