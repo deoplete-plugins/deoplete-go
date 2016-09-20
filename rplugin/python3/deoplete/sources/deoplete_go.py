@@ -37,6 +37,8 @@ class Source(Base):
         self.package_dot = vars.get('deoplete#sources#go#package_dot', False)
         self.sort_class = vars.get('deoplete#sources#go#sort_class', [])
         self.pointer = vars.get('deoplete#sources#go#pointer', False)
+        self.goos = vars.get('deoplete#sources#go#goos', '')
+        self.goarch = vars.get('deoplete#sources#go#goarch', '')
         self.use_cache = vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
             vars.get('deoplete#sources#go#json_directory', '')
@@ -200,13 +202,19 @@ class Source(Base):
                             column) - 1
         source = '\n'.join(buffer).encode()
 
+        env = os.environ.copy()
+        if self.goos != '':
+            env['GOOS'] = self.goos
+        if self.goarch != '':
+            env['GOARCH'] = self.goarch
         process = subprocess.Popen(
             [self.find_gocode_binary(), '-f=json', 'autocomplete', buffer.name,
              str(offset)],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            start_new_session=True)
+            start_new_session=True,
+            env=env)
         process.stdin.write(source)
         stdout_data, stderr_data = process.communicate()
         if kwargs and kwargs['kill'] is True:
