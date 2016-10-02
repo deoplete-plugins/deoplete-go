@@ -1,5 +1,6 @@
 import os
 import re
+import platform
 import subprocess
 
 from collections import OrderedDict
@@ -16,6 +17,20 @@ try:
     from ujson import loads
 except ImportError:
     from json import loads
+
+known_goos = (
+    'android',
+    'darwin',
+    'dragonfly',
+    'freebsd',
+    'linux',
+    'nacl',
+    'netbsd',
+    'openbsd',
+    'plan9',
+    'solaris',
+    'windows'
+)
 
 
 class Source(Base):
@@ -44,7 +59,6 @@ class Source(Base):
             vars.get('deoplete#sources#go#json_directory', '')
         self.use_on_event = vars.get('deoplete#sources#go#on_event', False)
         self.cgo = vars.get('deoplete#sources#go#cgo', False)
-        self.debug_enabled = vars.get('deoplete#sources#go#debug', False)
 
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
@@ -200,23 +214,43 @@ class Source(Base):
         offset = self.vim.call('line2byte', line) + \
             charpos2bytepos('utf-8', context['input'][: column],
                             column) - 1
-        source = '\n'.join(buffer).encode()
 
         env = os.environ.copy()
         if self.goos != '':
-            env['GOOS'] = self.goos
+            if self.goos == 'auto':
+                name = os.path.basename(os.path.splitext(buffer.name)[0])
+                if '_' in name:
+                    for part in name.rsplit('_', 2):
+                        if part in known_goos:
+                            env['GOOS'] = part
+                            break
+                if 'GOOS' not in env:
+                    for line in buffer[:10]:
+                        if not line.startswith('// +build'):
+                            continue
+                        for item in line[9:].strip().split():
+                            item = item.split(',', 1)[0]
+                            if item in known_goos:
+                                env['GOOS'] = item
+                                break
+            else:
+                env['GOOS'] = self.goos
+
+            if 'GOOS' in env and env['GOOS'] != platform.system().lower():
+                env['CGO_ENABLED'] = '0'
         if self.goarch != '':
             env['GOARCH'] = self.goarch
+
         process = subprocess.Popen(
-            [self.find_gocode_binary(), '-f=json', 'autocomplete', buffer.name,
+            [self.find_gocode_binary(), '-debug', '-f=json', 'autocomplete', buffer.name,
              str(offset)],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             start_new_session=True,
             env=env)
-        process.stdin.write(source)
-        stdout_data, stderr_data = process.communicate()
+        stdout_data, stderr_data = process.communicate('\n'.join(buffer).encode())
+
         if kwargs and kwargs['kill'] is True:
             process.kill
         return loads(stdout_data.decode())
