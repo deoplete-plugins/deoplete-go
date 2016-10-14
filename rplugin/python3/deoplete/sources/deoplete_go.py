@@ -230,11 +230,13 @@ class Source(Base):
                         break
                     elif not line.startswith('// +build'):
                         continue
-                    for item in line[9:].strip().split():
-                        item = item.split(',', 1)[0]
-                        if item in known_goos:
-                            env['GOOS'] = item
-                            break
+                    directives = [x.split(',', 1)[0]
+                                  for x in line[9:].strip().split()]
+                    if platform.system().lower() not in directives:
+                        for plat in directives:
+                            if plat in known_goos:
+                                env['GOOS'] = plat
+                                break
         elif self.goos != '':
             env['GOOS'] = self.goos
 
