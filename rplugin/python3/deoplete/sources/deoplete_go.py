@@ -55,6 +55,7 @@ class Source(Base):
         self.goos = vars.get('deoplete#sources#go#goos', '')
         self.auto_goos = vars.get('deoplete#sources#go#auto_goos', False)
         self.goarch = vars.get('deoplete#sources#go#goarch', '')
+        self.sock = vars.get('deoplete#sources#go#gocode_sock', False)
         self.use_cache = vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
             vars.get('deoplete#sources#go#json_directory', '')
@@ -246,9 +247,16 @@ class Source(Base):
         if self.goarch != '':
             env['GOARCH'] = self.goarch
 
+        args = [self.find_gocode_binary(), '-f=json']
+        # basically, '-sock' option for mdempsky/gocode.
+        # probably meaningless in nsf/gocode that already run the rpc server
+        if self.sock and self.sock in ['unix', 'tcp', 'none']:
+            args.append('-sock={}'.format(self.sock))
+
+        args += ['autocomplete', buffer.name, str(offset)]
+
         process = subprocess.Popen(
-            [self.find_gocode_binary(), '-f=json', 'autocomplete', buffer.name,
-             str(offset)],
+            args,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
