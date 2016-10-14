@@ -321,9 +321,9 @@ If not set, deoplete-go use `c11`(latest) version.
 | **Example**  | `1`     |
 
 When enabled, deoplete-go will try to set `GOOS` by checking the file name for
-`name_<OS>.go`.  If not found, the first 10 lines will be checked for first `//
-+build <OS>` directive.  If the file's OS doesn't match your OS (e.g.
-`file_darwin.go` while on `linux`), `CGO_ENABLED=0` will also be set.
+`name_<OS>.go`.  If not found, the file will be checked for a `// +build <OS>`
+directive.  If the file's OS doesn't match your OS (e.g.  `file_darwin.go`
+while on `linux`), `CGO_ENABLED=0` will also be set.
 
 **Note:** There may be a 5-10 second delay if `gocode` needs to compile the
 platform-specific sources for the first time.

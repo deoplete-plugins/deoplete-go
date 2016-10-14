@@ -225,8 +225,10 @@ class Source(Base):
                         env['GOOS'] = part
                         break
             if 'GOOS' not in env:
-                for line in buffer[:10]:
-                    if not line.startswith('// +build'):
+                for line in buffer:
+                    if line.startswith('package '):
+                        break
+                    elif not line.startswith('// +build'):
                         continue
                     for item in line[9:].strip().split():
                         item = item.split(',', 1)[0]
