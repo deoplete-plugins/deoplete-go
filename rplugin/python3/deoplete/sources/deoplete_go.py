@@ -100,15 +100,27 @@ class Source(Base):
             # initialize in-memory cache
             self.cgo_cache, self.cgo_inline_source = dict(), None
 
+        # Dummy execute the gocode for gocode's in-memory cache
+        try:
+            context['complete_position'] = \
+                self.vim.current.window.cursor[1]
+            self.get_complete_result(self.buffer, context, kill=True)
+            self.debug('called on_init')
+        except Exception:
+            # Ignore the error
+            pass
+
     def on_event(self, context):
         # Dummy execute the gocode for gocode's in-memory cache
+        # available:
+        #   ['BufNewFile', 'BufNew', 'BufRead', 'BufWritePost']
         if context['filetype'] == 'go' and \
                 self.use_on_event and context['event'] == 'BufRead':
             try:
-                buffer = self.vim.current.buffer
                 context['complete_position'] = \
                     self.vim.current.window.cursor[1]
-                self.get_complete_result(buffer, context, kill=True)
+                self.get_complete_result(self.buffer, context, kill=True)
+                self.debug('called BufRead on_event')
             except Exception:
                 # Ignore the error
                 pass
@@ -260,7 +272,7 @@ class Source(Base):
         args = [self.find_gocode_binary(), '-f=json']
         # basically, '-sock' option for mdempsky/gocode.
         # probably meaningless in nsf/gocode that already run the rpc server
-        if self.sock and self.sock in ['unix', 'tcp', 'none']:
+        if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
             args.append('-sock={}'.format(self.sock))
 
         args += ['autocomplete', buffer.name, str(offset)]
