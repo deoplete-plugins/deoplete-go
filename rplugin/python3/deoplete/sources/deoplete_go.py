@@ -19,17 +19,8 @@ except ImportError:
     from json import loads
 
 known_goos = (
-    'android',
-    'darwin',
-    'dragonfly',
-    'freebsd',
-    'linux',
-    'nacl',
-    'netbsd',
-    'openbsd',
-    'plan9',
-    'solaris',
-    'windows'
+    'android', 'darwin', 'dragonfly', 'freebsd', 'linux', 'nacl', 'netbsd',
+    'openbsd', 'plan9', 'solaris', 'windows'
 )
 
 
@@ -47,21 +38,32 @@ class Source(Base):
     def on_init(self, context):
         vars = context['vars']
 
-        self.gocode_binary = vars.get('deoplete#sources#go#gocode_binary', '')
-        self.loaded_gocode_binary = False
-        self.package_dot = vars.get('deoplete#sources#go#package_dot', False)
-        self.sort_class = vars.get('deoplete#sources#go#sort_class', [])
-        self.pointer = vars.get('deoplete#sources#go#pointer', False)
-        self.goos = vars.get('deoplete#sources#go#goos', '')
-        self.auto_goos = vars.get('deoplete#sources#go#auto_goos', False)
-        self.goarch = vars.get('deoplete#sources#go#goarch', '')
-        self.sock = vars.get('deoplete#sources#go#gocode_sock', False)
-        self.use_cache = vars.get('deoplete#sources#go#use_cache', False)
+        self.gocode_binary = \
+            vars.get('deoplete#sources#go#gocode_binary', '')
+        self.package_dot = \
+            vars.get('deoplete#sources#go#package_dot', False)
+        self.sort_class = \
+            vars.get('deoplete#sources#go#sort_class', [])
+        self.pointer = \
+            vars.get('deoplete#sources#go#pointer', False)
+        self.goos = \
+            vars.get('deoplete#sources#go#goos', '')
+        self.auto_goos = \
+            vars.get('deoplete#sources#go#auto_goos', False)
+        self.goarch = \
+            vars.get('deoplete#sources#go#goarch', '')
+        self.sock = \
+            vars.get('deoplete#sources#go#gocode_sock', False)
+        self.use_cache = \
+            vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
             vars.get('deoplete#sources#go#json_directory', '')
-        self.use_on_event = vars.get('deoplete#sources#go#on_event', False)
-        self.cgo = vars.get('deoplete#sources#go#cgo', False)
+        self.use_on_event = \
+            vars.get('deoplete#sources#go#on_event', False)
+        self.cgo = \
+            vars.get('deoplete#sources#go#cgo', False)
 
+        self.loaded_gocode_binary = False
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
 
         if self.pointer:
@@ -77,8 +79,10 @@ class Source(Base):
                 return
 
             self.cgo_options = {
-                'std': vars.get('deoplete#sources#go#cgo#std', 'c11'),
-                'sort_algo': vars.get('deoplete#sources#cgo#sort_algo', None)
+                'std':
+                    vars.get('deoplete#sources#go#cgo#std', 'c11'),
+                'sort_algo':
+                    vars.get('deoplete#sources#cgo#sort_algo', None)
             }
 
             if not clang.Config.loaded and \
@@ -147,7 +151,8 @@ class Source(Base):
                     word = '*' + word
 
                 candidates = dict(
-                    word=word, abbr=abbr, kind=kind, info=info, dup=1)
+                    word=word, abbr=abbr, kind=kind, info=info, dup=1
+                )
 
                 if not self.sort_class or _class == 'import':
                     out.append(candidates)
@@ -179,8 +184,10 @@ class Source(Base):
         else:
             self.cgo_inline_source = inline_source
             # return candidates use libclang-python3
-            return cgo.complete(self.index, self.cgo_cache, self.cgo_options,
-                                count, self.cgo_inline_source)
+            return cgo.complete(
+                self.index, self.cgo_cache, self.cgo_options, count,
+                self.cgo_inline_source
+            )
 
     def get_cache(self, context, buffer):
         if not self.use_cache:
@@ -197,8 +204,9 @@ class Source(Base):
             return None
 
         library = stdlib.packages.get(package)
-        import_library = [x['library'][0] for x in current_import
-                          if package == x['package']]
+        import_library = [
+            x['library'][0] for x in current_import if package == x['package']
+        ]
         result = [0, []]
         for x in library:
             package_json = \
@@ -231,8 +239,9 @@ class Source(Base):
                         break
                     elif not line.startswith('// +build'):
                         continue
-                    directives = [x.split(',', 1)[0]
-                                  for x in line[9:].strip().split()]
+                    directives = [
+                        x.split(',', 1)[0] for x in line[9:].strip().split()
+                    ]
                     if platform.system().lower() not in directives:
                         for plat in directives:
                             if plat in known_goos:
@@ -261,8 +270,11 @@ class Source(Base):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             start_new_session=True,
-            env=env)
-        stdout_data, stderr_data = process.communicate('\n'.join(buffer).encode())
+            env=env
+        )
+        stdout_data, stderr_data = process.communicate(
+            '\n'.join(buffer).encode()
+        )
 
         if kwargs and kwargs['kill'] is True:
             process.kill
@@ -283,14 +295,17 @@ class Source(Base):
                 package_name = re.sub(r'\t|"', '', b)
                 if str(package_name).find(r'/', 0) > 0:
                     full_package_name = str(package_name).split('/', -1)
-                    package_name = full_package_name[len(full_package_name) -
-                                                     1]
-                    library = '/'.join(full_package_name[:len(
-                        full_package_name) - 1]),
+                    package_name = \
+                        full_package_name[len(full_package_name) - 1]
+                    library = '/'.join(
+                        full_package_name[:len(full_package_name) - 1]
+                    ),
 
                     packages.append(
                         dict(
-                            library=library, package=package_name))
+                            library=library, package=package_name
+                        )
+                    )
                 else:
                     packages.append(dict(library='none', package=package_name))
         return packages
@@ -308,19 +323,19 @@ class Source(Base):
         except Exception:
             return self.find_binary_path('gocode')
 
-    def find_binary_path(self, cmd):
+    def find_binary_path(self, path):
 
-        def is_exec(fpath):
+        def is_exec(bin_path):
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-        fpath, fname = os.path.split(cmd)
-        if fpath:
-            if is_exec(cmd):
-                return cmd
+        dirpath, binary = os.path.split(path)
+        if dirpath:
+            if is_exec(path):
+                return path
         else:
-            for path in os.environ["PATH"].split(os.pathsep):
-                path = path.strip('"')
-                binary = os.path.join(path, cmd)
+            for p in os.environ["PATH"].split(os.pathsep):
+                p = p.strip('"')
+                binary = os.path.join(p, path)
                 if is_exec(binary):
                     return binary
-        return error(self.vim, cmd + ' binary not found')
+        return error(self.vim, path + ' binary not found')
