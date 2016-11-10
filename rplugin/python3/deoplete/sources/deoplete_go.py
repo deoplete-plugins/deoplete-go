@@ -6,9 +6,10 @@ import subprocess
 from collections import OrderedDict
 
 from .base import Base
-from deoplete.util import charpos2bytepos, error, load_external_module
+from deoplete.util import charpos2bytepos, error, load_external_module, expand
 
 load_external_module(__file__, 'sources/deoplete_go')
+from buffer import Buffer
 from cgo import cgo
 from stdlib import stdlib
 
@@ -35,29 +36,31 @@ class Source(Base):
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
 
+        self.buffer = Buffer(self.vim)
+
     def on_init(self, context):
         vars = context['vars']
 
         self.gocode_binary = \
-            vars.get('deoplete#sources#go#gocode_binary', '')
+            expand(vars.get('deoplete#sources#go#gocode_binary', ''))
         self.package_dot = \
             vars.get('deoplete#sources#go#package_dot', False)
         self.sort_class = \
             vars.get('deoplete#sources#go#sort_class', [])
         self.pointer = \
             vars.get('deoplete#sources#go#pointer', False)
-        self.goos = \
-            vars.get('deoplete#sources#go#goos', '')
         self.auto_goos = \
             vars.get('deoplete#sources#go#auto_goos', False)
+        self.goos = \
+            vars.get('deoplete#sources#go#goos', '')
         self.goarch = \
             vars.get('deoplete#sources#go#goarch', '')
         self.sock = \
-            vars.get('deoplete#sources#go#gocode_sock', False)
+            vars.get('deoplete#sources#go#gocode_sock', '')
         self.use_cache = \
             vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
-            vars.get('deoplete#sources#go#json_directory', '')
+            expand(vars.get('deoplete#sources#go#json_directory', ''))
         self.use_on_event = \
             vars.get('deoplete#sources#go#on_event', False)
         self.cgo = \
@@ -115,15 +118,13 @@ class Source(Base):
         return m.start() if m else -1
 
     def gather_candidates(self, context):
-        buffer = self.vim.current.buffer
-
         # If enabled self.cgo, and matched self.cgo_complete_pattern pattern
         if self.cgo and self.cgo_complete_pattern.search(context['input']):
-            return self.cgo_completion(buffer)
+            return self.cgo_completion(self.buffer)
 
-        result = self.get_cache(context, buffer)
+        result = self.get_cache(context, self.buffer)
         if result is None:
-            result = self.get_complete_result(buffer, context)
+            result = self.get_complete_result(self.buffer, context)
 
         try:
             if result[1][0]['class'] == 'PANIC':
