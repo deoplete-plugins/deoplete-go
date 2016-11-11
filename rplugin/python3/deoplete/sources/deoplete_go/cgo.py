@@ -97,7 +97,8 @@ class cgo(object):
 
         # Index.parse(path, args=None, unsaved_files=None, options = 0)
         tu = index.parse(
-            fname, cgo_flags, unsaved_files=files, options=options)
+            fname, cgo_flags, unsaved_files=files, options=options
+        )
 
         # TranslationUnit.codeComplete(path, line, column, ...)
         cr = tu.codeComplete(
@@ -106,7 +107,8 @@ class cgo(object):
             unsaved_files=files,
             include_macros=False,
             include_code_patterns=False,
-            include_brief_comments=False)
+            include_brief_comments=False
+        )
 
         if cgo_options['sort_algo'] == 'priority':
             results = sorted(cr.results, key=cgo.get_priority)
@@ -138,31 +140,41 @@ class cgo(object):
         # C data with explicit length to Go []byte
         #  func C.GoBytes(unsafe.Pointer, C.int) []byte
         cache[source] = [
-            {'word': 'CString',
-             'abbr': 'CString(string) *C.char',
-             'info': 'CString(string) *C.char',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'CBytes',
-             'abbr': 'CBytes([]byte) unsafe.Pointer',
-             'info': 'CBytes([]byte) unsafe.Pointer',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoString',
-             'abbr': 'GoString(*C.char) string',
-             'info': 'GoString(*C.char) string',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoStringN',
-             'abbr': 'GoStringN(*C.char, C.int) string',
-             'info': 'GoStringN(*C.char, C.int) string',
-             'kind': 'function',
-             'dup': 1},
-            {'word': 'GoBytes',
-             'abbr': 'GoBytes(unsafe.Pointer, C.int) []byte',
-             'info': 'GoBytes(unsafe.Pointer, C.int) []byte',
-             'kind': 'function',
-             'dup': 1},
+            {
+                'word': 'CString',
+                'abbr': 'CString(string) *C.char',
+                'info': 'CString(string) *C.char',
+                'kind': 'function',
+                'dup': 1
+            },
+            {
+                'word': 'CBytes',
+                'abbr': 'CBytes([]byte) unsafe.Pointer',
+                'info': 'CBytes([]byte) unsafe.Pointer',
+                'kind': 'function',
+                'dup': 1
+            },
+            {
+                'word': 'GoString',
+                'abbr': 'GoString(*C.char) string',
+                'info': 'GoString(*C.char) string',
+                'kind': 'function',
+                'dup': 1
+            },
+            {
+                'word': 'GoStringN',
+                'abbr': 'GoStringN(*C.char, C.int) string',
+                'info': 'GoStringN(*C.char, C.int) string',
+                'kind': 'function',
+                'dup': 1
+            },
+            {
+                'word': 'GoBytes',
+                'abbr': 'GoBytes(unsafe.Pointer, C.int) []byte',
+                'info': 'GoBytes(unsafe.Pointer, C.int) []byte',
+                'kind': 'function',
+                'dup': 1
+            },
         ]
         cache[source] += \
             list(map(cgo.parse_candidates, results))
