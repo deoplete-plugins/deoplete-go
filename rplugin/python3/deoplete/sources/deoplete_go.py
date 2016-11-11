@@ -339,7 +339,7 @@ class Source(Base):
     def find_binary_path(self, path):
 
         def is_exec(bin_path):
-            return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+            return os.path.isfile(path) and os.access(path, os.X_OK)
 
         dirpath, binary = os.path.split(path)
         if dirpath:
