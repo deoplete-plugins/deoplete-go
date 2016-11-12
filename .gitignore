@@ -66,3 +66,6 @@ target/
 # deoplete-go original
 # remote plugin specs
 .-rplugin~
+
+data/json/devel/**
+data/stdlib-devel_darwin_amd64.txt
