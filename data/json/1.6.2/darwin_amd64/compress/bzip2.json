@@ -1,1 +1,0 @@
-[0, [{"class": "func", "name": "NewReader", "type": "func(r io.Reader) io.Reader"}, {"class": "type", "name": "StructuralError", "type": "string"}]]
