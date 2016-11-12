@@ -7,7 +7,7 @@ TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
-GO_STABLE_VERSION = 1.7
+GO_STABLE_VERSION = 1.7.3
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
 
@@ -70,7 +70,7 @@ lint/flake8:
 	flake8 --config=$(PWD)/.flake8 $(foreach file,$(MODULE_NAME),$(RPLUGIN_PATH)/$(file)) || true
 
 lint/install_modules:
-	pip3 -q install -U $(PIP_FLAGS) -r ./tests/requirements.txt
+	pip3 install -U $(PIP_FLAGS) -r ./tests/requirements.txt
 
 clean:
 	$(RM) -r $(CURRENT)/build $(TARGET) rplugin/python3/deoplete/ujson/build data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt

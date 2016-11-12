@@ -269,7 +269,9 @@ import (
 func main() {
 	repoPath := filepath.Join(os.Getenv("GOPATH"), "src/github.com/libgit2/git2go")
 	gitRepo, err := git.OpenRepository(repoPath)
+
 	C.git_blame_|
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -332,7 +334,7 @@ platform-specific sources for the first time.
 
 ### How to use static json caching
 
-| **Current Go version** | `1.6.2`           |
+| **Current Go version** | `1.7.3`           |
 |------------------------|-------------------|
 | `$GOOS`                | `darwin`, `linux` |
 | `$GOARCH`              | `amd64`           |
