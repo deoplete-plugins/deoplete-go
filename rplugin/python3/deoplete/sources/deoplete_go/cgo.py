@@ -75,7 +75,7 @@ class cgo(object):
             else:
                 flags.add('%s=%s' % (key, value))
 
-        cgo_flags = ['-std', cgo_options['std'], '-x', 'c'] + list(flags)
+        cgo_flags = ['-std', cgo_options['std']] + list(flags)
 
         fname = 'cgo_inline.c'
         main = """
