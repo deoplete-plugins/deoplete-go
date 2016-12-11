@@ -20,7 +20,7 @@ ignore = D100,D101,D102,D103,D104,D201D201,D202,D203,D204,E402,E123/E133,E226,E2
 
 # set maximum allowed line length
 #   default: 79
-max-line-length = 79
+max-line-length = 99
 
 # set the error format
 # format =
