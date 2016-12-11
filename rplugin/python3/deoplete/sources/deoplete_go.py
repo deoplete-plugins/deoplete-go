@@ -6,10 +6,9 @@ import subprocess
 from collections import OrderedDict
 
 from .base import Base
-from deoplete.util import charpos2bytepos, error, expand, load_external_module
+from deoplete.util import charpos2bytepos, error, expand, getlines, load_external_module
 
 load_external_module(__file__, 'sources/deoplete_go')
-from buffer import Buffer
 from cgo import cgo
 from stdlib import stdlib
 
@@ -35,8 +34,6 @@ class Source(Base):
         self.filetypes = ['go']
         self.input_pattern = r'(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?'
         self.rank = 500
-
-        self.buffer = Buffer(self.vim)
 
     def on_init(self, context):
         vars = context['vars']
@@ -105,11 +102,11 @@ class Source(Base):
     def gather_candidates(self, context):
         # If enabled self.cgo, and matched self.cgo_complete_pattern pattern
         if self.cgo and self.cgo_complete_pattern.search(context['input']):
-            return self.cgo_completion(self.buffer)
+            return self.cgo_completion(getlines(self.vim))
 
-        result = self.get_cache(context, self.buffer)
+        result = self.get_cache(context, getlines(self.vim))
         if result is None:
-            result = self.get_complete_result(self.buffer, context)
+            result = self.get_complete_result(context, getlines(self.vim), context['bufname'])
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -203,7 +200,7 @@ class Source(Base):
 
         return result
 
-    def get_complete_result(self, buffer, context):
+    def get_complete_result(self, context, buffer, bufname):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
 
@@ -213,7 +210,7 @@ class Source(Base):
 
         env = os.environ.copy()
         if self.auto_goos:
-            name = os.path.basename(os.path.splitext(buffer.name)[0])
+            name = os.path.basename(os.path.splitext(bufname)[0])
             if '_' in name:
                 for part in name.rsplit('_', 2):
                     if part in known_goos:
@@ -248,7 +245,7 @@ class Source(Base):
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
             args.append('-sock={}'.format(self.sock))
 
-        args += ['autocomplete', buffer.name, str(offset)]
+        args += ['autocomplete', bufname, str(offset)]
 
         process = subprocess.Popen(
             args,
