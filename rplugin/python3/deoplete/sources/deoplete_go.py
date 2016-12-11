@@ -61,8 +61,6 @@ class Source(Base):
             vars.get('deoplete#sources#go#use_cache', False)
         self.json_directory = \
             expand(vars.get('deoplete#sources#go#json_directory', ''))
-        self.use_on_event = \
-            vars.get('deoplete#sources#go#on_event', False)
         self.cgo = \
             vars.get('deoplete#sources#go#cgo', False)
 
@@ -99,31 +97,6 @@ class Source(Base):
             self.index = clang.Index.create(0)
             # initialize in-memory cache
             self.cgo_cache, self.cgo_inline_source = dict(), None
-
-        # Dummy execute the gocode for gocode's in-memory cache
-        try:
-            context['complete_position'] = \
-                self.vim.current.window.cursor[1]
-            self.get_complete_result(self.buffer, context, kill=True)
-            self.debug('called on_init')
-        except Exception:
-            # Ignore the error
-            pass
-
-    def on_event(self, context):
-        # Dummy execute the gocode for gocode's in-memory cache
-        # available:
-        #   ['BufNewFile', 'BufNew', 'BufRead', 'BufWritePost']
-        if context['filetype'] == 'go' and \
-                self.use_on_event and context['event'] == 'BufRead':
-            try:
-                context['complete_position'] = \
-                    self.vim.current.window.cursor[1]
-                self.get_complete_result(self.buffer, context, kill=True)
-                self.debug('called BufRead on_event')
-            except Exception:
-                # Ignore the error
-                pass
 
     def get_complete_position(self, context):
         m = self.complete_pos.search(context['input'])
@@ -230,7 +203,7 @@ class Source(Base):
 
         return result
 
-    def get_complete_result(self, buffer, context, **kwargs):
+    def get_complete_result(self, buffer, context):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
 
@@ -289,8 +262,6 @@ class Source(Base):
             '\n'.join(buffer).encode()
         )
 
-        if kwargs and kwargs['kill'] is True:
-            process.kill
         return loads(stdout_data.decode())
 
     def parse_import_package(self, buffer):
