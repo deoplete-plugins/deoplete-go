@@ -203,6 +203,7 @@ class Source(Base):
     def get_complete_result(self, context, buffer, bufname):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
+        cwd = context['cwd']
 
         offset = self.vim.call('line2byte', line) + \
             charpos2bytepos('utf-8', context['input'][: column],
@@ -245,7 +246,7 @@ class Source(Base):
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
             args.append('-sock={}'.format(self.sock))
 
-        args += ['autocomplete', bufname, str(offset)]
+        args += ['autocomplete', os.path.join(cwd, bufname), str(offset)]
 
         process = subprocess.Popen(
             args,
