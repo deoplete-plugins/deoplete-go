@@ -75,4 +75,4 @@ lint/install_modules:
 clean:
 	$(RM) -r $(CURRENT)/build $(TARGET) rplugin/python3/deoplete/ujson/build data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt
 
-.PHONY: test lint clean
+.PHONY: test lint clean gen_json build
