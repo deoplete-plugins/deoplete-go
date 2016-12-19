@@ -106,7 +106,8 @@ class Source(Base):
 
         result = self.get_cache(context, getlines(self.vim))
         if result is None:
-            result = self.get_complete_result(context, getlines(self.vim), context['bufname'])
+            bufname = self.vim.current.buffer.name
+            result = self.get_complete_result(context, getlines(self.vim), bufname)
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -203,7 +204,6 @@ class Source(Base):
     def get_complete_result(self, context, buffer, bufname):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
-        cwd = context['cwd']
 
         offset = self.vim.call('line2byte', line) + \
             charpos2bytepos('utf-8', context['input'][: column],
@@ -246,7 +246,7 @@ class Source(Base):
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
             args.append('-sock={}'.format(self.sock))
 
-        args += ['autocomplete', os.path.join(cwd, bufname), str(offset)]
+        args += ['autocomplete', bufname, str(offset)]
 
         process = subprocess.Popen(
             args,
