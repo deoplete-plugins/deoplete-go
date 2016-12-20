@@ -3,7 +3,7 @@ RPLUGIN_HOME := $(CURRENT)/rplugin/python3
 RPLUGIN_PATH := $(RPLUGIN_HOME)/deoplete/sources
 MODULE_NAME := deoplete_go.py deoplete_go/cgo.py deoplete_go/stdlib.py
 
-TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so 
+TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
@@ -22,7 +22,7 @@ ifneq ($(PACKAGE),unsafe)
 	PACKAGE += unsafe
 endif
 
-PIP_FLAGS ?= 
+PIP_FLAGS ?=
 
 
 all: $(TARGET)
