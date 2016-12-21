@@ -19,9 +19,8 @@ except ImportError:
     from json import loads
 
 known_goos = (
-    'android', 'darwin', 'dragonfly', 'freebsd', 'linux', 'nacl', 'netbsd',
-    'openbsd', 'plan9', 'solaris', 'windows'
-)
+    'appengine', 'android', 'darwin', 'dragonfly', 'freebsd', 'linux', 'nacl',
+    'netbsd', 'openbsd', 'plan9', 'solaris', 'windows')
 
 
 class Source(Base):
