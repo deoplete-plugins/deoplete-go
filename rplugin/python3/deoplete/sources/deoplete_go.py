@@ -26,7 +26,7 @@ known_goos = (
 class Source(Base):
 
     def __init__(self, vim):
-        Base.__init__(self, vim)
+        super(Source, self).__init__(vim)
 
         self.name = 'go'
         self.mark = '[Go]'
