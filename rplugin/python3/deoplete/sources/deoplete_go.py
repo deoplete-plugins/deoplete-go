@@ -205,6 +205,8 @@ class Source(Base):
         offset = self.get_cursor_offset(context)
 
         env = os.environ.copy()
+        env['GOPATH'] = self.vim.eval('$GOPATH')
+
         if self.auto_goos:
             name = os.path.basename(os.path.splitext(bufname)[0])
             if '_' in name:
