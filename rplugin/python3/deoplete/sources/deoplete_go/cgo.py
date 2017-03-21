@@ -105,8 +105,8 @@ class cgo(object):
             fname, (line_count + 2),
             1,
             unsaved_files=files,
-            include_macros=False,
-            include_code_patterns=False,
+            include_macros=True,
+            include_code_patterns=True,
             include_brief_comments=False
         )
 
