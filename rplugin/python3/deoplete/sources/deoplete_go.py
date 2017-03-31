@@ -183,8 +183,7 @@ class Source(Base):
         current_import = self.parse_import_package(buffer)
         import_package = [x['package'] for x in current_import]
 
-        if package == '' or package in import_package \
-                or package not in stdlib.packages:
+        if package == '' or package not in stdlib.packages:
             return None
 
         library = stdlib.packages.get(package)
