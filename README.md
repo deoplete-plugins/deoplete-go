@@ -76,7 +76,7 @@ call dein#add('Shougo/deoplete.nvim')
 call dein#add('zchee/deoplete-go', {'build': 'make'})
 
 " NeoBundle
-NeoBundle 'Shougo/deoplete.nvim'}
+NeoBundle 'Shougo/deoplete.nvim'
 NeoBundle 'zchee/deoplete-go', {'build': {'unix': 'make'}}
 
 " vim-plug
