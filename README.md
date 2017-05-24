@@ -25,7 +25,7 @@ An autocompletion daemon for the Go programming language.
 Fastest, Context-sesinive, Server/Client architecture, Result caching.  
 The defact standard completion engine.
 
-===
+---
 
 ## Required
 
@@ -39,7 +39,7 @@ https://github.com/Shougo/deoplete.nvim
 ### gocode
 https://github.com/nsf/gocode
 
-===
+---
 
 ## How to install
 
@@ -84,7 +84,7 @@ Plug 'Shougo/deoplete.nvim'
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 ```
 
-===
+---
 
 ## Available Settings
 
@@ -330,7 +330,7 @@ while on `linux`), `CGO_ENABLED=0` will also be set.
 **Note:** There may be a 5-10 second delay if `gocode` needs to compile the
 platform-specific sources for the first time.
 
-===
+---
 
 ### How to use static json caching
 
@@ -356,7 +356,7 @@ go tool api -contexts $GOOS-$GOARCH-cgo | grep -v 'golang.org/x/net/http2/hpack'
 This api list used in the base for the generation of json file.
 
 
-===
+---
 
 ## Sample init.vim
 
@@ -380,7 +380,7 @@ let g:deoplete#sources#go#use_cache = 1
 let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
-===
+---
 
 TODO:
 -----
