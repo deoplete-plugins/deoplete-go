@@ -73,6 +73,8 @@ class cgo(object):
                 for flag in cgo.get_pkgconfig(value.split()):
                     flags.add(flag)
             else:
+                if '${SRCDIR}' in key:
+                    key = key.replace('${SRCDIR}', './')
                 flags.add('%s=%s' % (key, value))
 
         cgo_flags = ['-std', cgo_options['std']] + list(flags)
