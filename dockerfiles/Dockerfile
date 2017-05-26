@@ -36,7 +36,7 @@ RUN set -eux \
 	\
 	&& wget -q -O - https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz | tar xzf - --strip-components=1 -C "/usr/local" \
 	\
-	&& mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME /root/.config/nvim ${NVIM_PYTHON_LOG_FILE} \
+	&& mkdir -p $XDG_CONFIG_HOME $XDG_CACHE_HOME $XDG_DATA_HOME /root/.config/nvim /tmp/log \
 	&& touch /root/.config/nvim/init.vim \
 	\
 	&& dpkgArch="$(dpkg --print-architecture)"; \
