@@ -22,8 +22,8 @@ The Nextgen word completion.
 [nsf/gocode](https://github.com/nsf/gocode)
 
 An autocompletion daemon for the Go programming language.  
-Fastest, Context-sesinive, Server/Client architecture, Result caching.  
-The defact standard completion engine.
+Fastest, Context-sensitive, Server/Client architecture, Result caching.  
+The *de facto* standard completion engine.
 
 ---
 
@@ -51,7 +51,7 @@ See Neovim wiki.
 - [Building](https://github.com/neovim/neovim/wiki/Building-Neovim)
 
 ### 2. Install neovim/python-client
-Neovim remonte client for python.  
+Neovim remote client for python.  
 See https://github.com/neovim/python-client
 
 ```bash
@@ -108,7 +108,7 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 | **Example**  | `$GOPATH.'/bin/gocode'` |
 
 `deoplete-go` will directly call `gocode`. Not vim bypass due to the omnifunc.  
-By default(not set), Find the gocode binary in `$PATH` environment.  
+By default (not set), Find the gocode binary in `$PATH` environment.  
 This setting is **Recommend**.  
 If you set it, `deoplete-go` spared look for the binary. It will improve performance.
 
@@ -118,7 +118,7 @@ let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
 ```
 
 ### `g:deoplete#sources#go#package_dot`
-#### Automatically insert dot for after package name
+#### Automatically insert dot after package name
 
 | **Default**  | `0` |
 |--------------|-----|
@@ -126,8 +126,8 @@ let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
 | **Type**     | int |
 | **Example**  | `1` |
 
-Automatically insert dot(period) when you select `package` name in popup menu.  
-By default, no dot(period) is inserted after a package name.
+Automatically insert dot (period) when you select `package` name in popup menu.  
+By default, no dot (period) is inserted after a package name.
 
 If you would prefer adding a period then set:
 ```vim
@@ -163,7 +163,7 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 | **Type**     | int   |
 | **Example**  | `1`   |
 
-Support pointer(`*`) match.  
+Support pointer (`*`) match.  
 Example are bellow code. `|` is cursor.
 
 ```go
@@ -226,7 +226,7 @@ let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 | **Type**     | int   |
 | **Example**  | `1`   |
 
-If current buffer have `import "C"` also `#include <foo.h>` and when you type `C.`, deoplete-go will be display the C function in the `foo.h`.
+If current buffer has `import "C"` also `#include <foo.h>` and when you type `C.`, deoplete-go will display the C function in the `foo.h`.
 
 Simple example is below. `|` is cursor.
 
@@ -249,7 +249,7 @@ func main() {
 
 Will return the `pid_t`, `malloc`, `free` and more.  
 
-The real example use libgit2.
+The real example uses libgit2.
 
 ```go
 package main
@@ -282,7 +282,7 @@ func main() {
 }
 ```
 
-Will return the that completion list.  
+Will return that completion list.  
 
 ![cgo_libgit2](images/cgo_libgit2.png)
 
@@ -311,7 +311,7 @@ In darwin, `libclang.dylib`, In Linux, `libclang.so`.
 | **Example**  | `c99`  |
 
 C language standard version option.  
-If not set, deoplete-go use `c11`(latest) version.
+If not set, deoplete-go uses `c11`(latest) version.
 
 ### `g:deoplete#sources#go#auto_goos`
 #### Automatically set GOOS environment variable when calling `gocode`
@@ -345,15 +345,15 @@ If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.
 
 And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.  
 If you want to it, run `make gen_json`.  
-Will generated json file to `./data/json/VERSION/$GOOS_$GOARCH`.
+Will generate a json file to `./data/json/VERSION/$GOOS_$GOARCH`.
 
-`make gen_json` command also will create `./data/stdlib.txt`. It same as `go tool api` result.  
+`make gen_json` command will also create `./data/stdlib.txt`. It is the same as `go tool api` result.  
 In detail,
 ```bash
 go tool api -contexts $GOOS-$GOARCH-cgo | grep -v 'golang.org/x/net/http2/hpack' | sed -e s/,//g | awk '{print $2}' | uniq > ./data/stdlib.txt
 ```
 
-This api list used in the base for the generation of json file.
+This api list is used in the base for the generation of json file.
 
 
 ---
