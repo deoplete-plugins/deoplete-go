@@ -93,8 +93,6 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 | `g:deoplete#sources#go#gocode_binary`  | `''`    | **Recommend** |
 | `g:deoplete#sources#go#package_dot`    | `0`     | No            |
 | `g:deoplete#sources#go#sort_class`     | `[]`    | **Recommend** |
-| `g:deoplete#sources#go#use_cache`      | `0`     | **Recommend** |
-| `g:deoplete#sources#go#json_directory` | `''`    | **Recommend** |
 | `g:deoplete#sources#go#cgo`            | `0`     | *Any*         |
 | `g:deoplete#sources#go#goos`           | `''`    | No            |
 
@@ -178,116 +176,6 @@ func NewFoo() *Foo {
 func (f *|
 ```
 
-### `g:deoplete#sources#go#use_cache` `g:deoplete#sources#go#json_directory`
-#### Static json caching
-
-`g:deoplete#sources#go#use_cache`
-
-| **Default**  | `0`           |
-|--------------|---------------|
-| **Required** | **Recommend** |
-| **Type**     | int           |
-| **Example**  | `1`           |
-
-`g:deoplete#sources#go#json_directory`
-
-| **Default**  | `''`                                   |
-|--------------|----------------------------------------|
-| **Required** | **Recommend**                          |
-| **Type**     | string                                 |
-| **Example**  | `'~/.cache/deoplete/go/$GOOS_$GOARCH'` |
-
-Use static json caching Go stdlib package API.  
-If matched name of stdlib and input package name, it returns the static json data without the use of gocode.  
-and, Possible to get package API if have not `import` of current buffer.
-
-Terms:
-
-- Hook the insert of dot `.` (e.g. `fmt.|`)
-- You typed package name have not `import` current buffer
-- Match the typed package name and json file name
-
-`deoplete-go` will parse `g:deoplete#sources#go#json_directory` directory. You can define of json data directory.  
-Recommend is `~/.cache/deoplete/go/$GOOS_$GOARCH` because this directly use other deoplete sources(e.g. deoplete-deji).
-
-Also, See [How to use static json caching](#how-to-use-static-json-caching)
-
-```vim
-let g:deoplete#sources#go#use_cache = 1
-let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
-```
-
-### `g:deoplete#sources#go#cgo`
-#### cgo complete use libclang-python3
-
-| **Default**  | `0`   |
-|--------------|-------|
-| **Required** | *Any* |
-| **Type**     | int   |
-| **Example**  | `1`   |
-
-If current buffer has `import "C"` also `#include <foo.h>` and when you type `C.`, deoplete-go will display the C function in the `foo.h`.
-
-Simple example is below. `|` is cursor.
-
-```go
-package main
-
-/*
-#include <stdlib.h>
-*/
-import "C"
-import (
-	"fmt"
-)
-
-func main() {
-	fmt.Printf()
-	C.|
-}
-```
-
-Will return the `pid_t`, `malloc`, `free` and more.  
-
-The real example uses libgit2.
-
-```go
-package main
-
-/*
-#include <git2.h>
-*/
-import "C"
-import (
-	"log"
-	"os"
-	"path/filepath"
-
-	"github.com/libgit2/git2go"
-)
-
-func main() {
-	repoPath := filepath.Join(os.Getenv("GOPATH"), "src/github.com/libgit2/git2go")
-	gitRepo, err := git.OpenRepository(repoPath)
-
-	C.git_blame_|
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	commitOid, err := gitRepo.Head()
-	if err != nil {
-
-	}
-}
-```
-
-Will return that completion list.  
-
-![cgo_libgit2](images/cgo_libgit2.png)
-
-Now support current buffer only.  
-TODO: Support parses `.c`, `.h` file.
 
 ### `g:deoplete#sources#go#cgo#libclang_path`
 #### libclang shared library path for cgo complete
@@ -332,32 +220,6 @@ platform-specific sources for the first time.
 
 ---
 
-### How to use static json caching
-
-| **Current Go version** | `1.7.3`           |
-|------------------------|-------------------|
-| `$GOOS`                | `darwin`, `linux` |
-| `$GOARCH`              | `amd64`           |
-
-Pre-generate json data is [data/json](./data/json).  
-If you use it, `cp -r data/json/VERSION/$GOOS_$GOARCH /path/to/data_dir`.  
-`/path/to/data_dir` is `g:deoplete#sources#go#json_directory`.
-
-And, You can generate your Go environment. such as version is `devel`, GOARCH is `arm`.  
-If you want to it, run `make gen_json`.  
-Will generate a json file to `./data/json/VERSION/$GOOS_$GOARCH`.
-
-`make gen_json` command will also create `./data/stdlib.txt`. It is the same as `go tool api` result.  
-In detail,
-```bash
-go tool api -contexts $GOOS-$GOARCH-cgo | grep -v 'golang.org/x/net/http2/hpack' | sed -e s/,//g | awk '{print $2}' | uniq > ./data/stdlib.txt
-```
-
-This api list is used in the base for the generation of json file.
-
-
----
-
 ## Sample init.vim
 
 ```vim
@@ -376,8 +238,6 @@ let g:deoplete#enable_at_startup = 1
 " deoplete-go settings
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-let g:deoplete#sources#go#use_cache = 1
-let g:deoplete#sources#go#json_directory = '/path/to/data_dir'
 ```
 
 ---

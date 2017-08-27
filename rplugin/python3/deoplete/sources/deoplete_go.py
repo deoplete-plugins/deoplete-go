@@ -53,10 +53,6 @@ class Source(Base):
             vars.get('deoplete#sources#go#goarch', '')
         self.sock = \
             vars.get('deoplete#sources#go#gocode_sock', '')
-        self.use_cache = \
-            vars.get('deoplete#sources#go#use_cache', False)
-        self.json_directory = \
-            expand(vars.get('deoplete#sources#go#json_directory', ''))
         self.cgo = \
             vars.get('deoplete#sources#go#cgo', False)
 
@@ -104,13 +100,11 @@ class Source(Base):
         if self.cgo and self.cgo_complete_pattern.search(context['input']):
             return self.cgo_completion(getlines(self.vim))
 
-        result = self.get_cache(context, getlines(self.vim))
-        if result is None:
-            bufname = self.vim.current.buffer.name
-            if not os.path.isfile(bufname):
-                bufname = self.vim.call('tempname')
-            result = self.get_complete_result(
-                context, getlines(self.vim), bufname)
+        bufname = self.vim.current.buffer.name
+        if not os.path.isfile(bufname):
+            bufname = self.vim.call('tempname')
+        result = self.get_complete_result(
+            context, getlines(self.vim), bufname)
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -175,34 +169,6 @@ class Source(Base):
                 self.index, self.cgo_cache, self.cgo_options, count,
                 self.cgo_inline_source
             )
-
-    def get_cache(self, context, buffer):
-        if not self.use_cache:
-            return None
-
-        # get package prefix at current input text
-        m = re.findall(r'(?:\b[\w\d]+)(?=\.)', context['input'])
-        package = str(m[-1]) if m else ''
-        current_import = self.parse_import_package(buffer)
-        import_package = [x['package'] for x in current_import]
-
-        if package == '' or package in import_package \
-                or package not in stdlib.packages:
-            return None
-
-        library = stdlib.packages.get(package)
-        import_library = [
-            x['library'][0] for x in current_import if package == x['package']
-        ]
-        result = [0, []]
-        for x in library:
-            package_json = \
-                os.path.join(self.json_directory, x, package + '.json')
-            if x not in import_library and os.path.isfile(package_json):
-                with open(package_json) as j:
-                    result[1] += [x for x in loads(j.read())[1]]
-
-        return result
 
     def get_complete_result(self, context, buffer, bufname):
         offset = self.get_cursor_offset(context)
