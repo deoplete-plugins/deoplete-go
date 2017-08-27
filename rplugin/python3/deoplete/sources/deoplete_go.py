@@ -106,6 +106,8 @@ class Source(Base):
         result = self.get_cache(context, getlines(self.vim))
         if result is None:
             bufname = self.vim.current.buffer.name
+            if not os.path.isfile(bufname):
+                bufname = self.vim.call('tempname')
             result = self.get_complete_result(
                 context, getlines(self.vim), bufname)
 
