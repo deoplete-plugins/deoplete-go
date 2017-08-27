@@ -65,6 +65,7 @@ class Source(Base):
 
         if self.pointer:
             self.complete_pos = re.compile(self.complete_pos.pattern + r'|\*$')
+            self.input_pattern += r'|\*'
 
         if self.cgo:
             load_external_module(__file__, 'clang')
