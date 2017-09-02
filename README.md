@@ -141,11 +141,12 @@ let g:deoplete#sources#go#package_dot = 1
 | **Type**     | list               |
 | **Example**  | See bellow exmaple |
 
-By befault, the completion word list is in the sort order of gocode. Same as omnifunc.  
-If you want to change it to an arbitrary order, set it.
+By default, the completion word list is in the sort order of gocode. Same as
+omnifunc.  If you want to change it to an arbitrary order, set it.
 
-Available values are [`package`, `func`, `type`, `var`, `const`].  
-If you did not include any value, it will always be hidden in the completion list.
+Available values are [`package`, `func`, `type`, `var`, `const`].
+If you did not include any value, it will always be hidden in the completion
+list.
 
 To display all words while sorting, set:
 ```vim
@@ -176,6 +177,78 @@ func NewFoo() *Foo {
 func (f *|
 ```
 
+### `g:deoplete#sources#go#cgo`
+#### cgo complete use libclang-python3
+
+| **Default**  | `0`   |
+|--------------|-------|
+| **Required** | *Any* |
+| **Type**     | int   |
+| **Example**  | `1`   |
+
+If current buffer has `import "C"` also `#include <foo.h>` and when you type
+`C.`, deoplete-go will display the C function in the `foo.h`.
+
+Simple example is below. `|` is cursor.
+
+```go
+package main
+
+/*
+#include <stdlib.h>
+*/
+import "C"
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Printf()
+	C.|
+}
+```
+
+Will return the `pid_t`, `malloc`, `free` and more.  
+
+The real example uses libgit2.
+
+```go
+package main
+
+/*
+#include <git2.h>
+*/
+import "C"
+import (
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/libgit2/git2go"
+)
+
+func main() {
+	repoPath := filepath.Join(os.Getenv("GOPATH"), "src/github.com/libgit2/git2go")
+	gitRepo, err := git.OpenRepository(repoPath)
+
+	C.git_blame_|
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	commitOid, err := gitRepo.Head()
+	if err != nil {
+
+	}
+}
+```
+
+Will return that completion list.
+
+![cgo_libgit2](images/cgo_libgit2.png)
+
+Now support current buffer only.  
+TODO: Support parses `.c`, `.h` file.
 
 ### `g:deoplete#sources#go#cgo#libclang_path`
 #### libclang shared library path for cgo complete
@@ -187,7 +260,7 @@ func (f *|
 | **Example**  | `/opt/llvm/lib/libclang.dylib` |
 
 libclang shared library path option.  
-In darwin, `libclang.dylib`, In Linux, `libclang.so`.  
+In darwin, `libclang.dylib`, In Linux, `libclang.so`.
 
 ### `g:deoplete#sources#go#cgo#std`
 #### C language standard version
