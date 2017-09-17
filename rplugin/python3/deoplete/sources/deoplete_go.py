@@ -2,6 +2,7 @@ import os
 import re
 import platform
 import subprocess
+import threading
 
 from collections import OrderedDict
 
@@ -109,8 +110,23 @@ class Source(Base):
             bufname = self.vim.current.buffer.name
             if not os.path.isfile(bufname):
                 bufname = self.vim.call('tempname')
-            result = self.get_complete_result(
-                context, getlines(self.vim), bufname)
+            if not context['is_async'] or self.progressiveThread is None:
+                self.result = []
+                self.progressiveThread = threading.Thread(
+                    target=self.get_complete_result,
+                    args=(context, getlines(self.vim), bufname),
+                    daemon=True
+                )
+                self.progressiveThread.run()
+                context['is_async'] = True
+                return []
+
+            if self.progressiveThread.is_alive():
+                return []
+
+            context['is_async'] = False
+            self.progressiveThread = None
+            result = self.result
 
         try:
             if result[1][0]['class'] == 'PANIC':
@@ -260,7 +276,7 @@ class Source(Base):
             '\n'.join(buffer).encode()
         )
 
-        return loads(stdout_data.decode())
+        self.result = loads(stdout_data.decode())
 
     def get_cursor_offset(self, context):
         line = self.vim.current.window.cursor[0]
