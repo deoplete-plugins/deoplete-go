@@ -276,7 +276,10 @@ class Source(Base):
             else:
                 raise
         except Exception:
-            return self.find_binary_path('gocode')
+            if platform.system().lower() == 'windows':
+                return self.find_binary_path('gocode.exe')
+            else:
+                return self.find_binary_path('gocode')
 
     def find_binary_path(self, path):
 
