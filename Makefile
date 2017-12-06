@@ -33,8 +33,8 @@ rplugin/python3/deoplete/ujson/.git:
 
 
 $(TARGET): rplugin/python3/deoplete/ujson/.git
-	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base=$(CURRENT)/build --build-lib=$(CURRENT)/build
-	mv $(CURRENT)/build/ujson.*.so $@
+	cd ./rplugin/python3/deoplete/ujson; $(PYTHON3) setup.py build --build-base="$(CURRENT)/build" --build-lib="$(CURRENT)/build"
+	mv "$(CURRENT)/build/ujson."*".so" "$(TARGET)"
 
 
 data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt:
@@ -72,6 +72,6 @@ lint/install_modules:
 	pip3 install -U $(PIP_FLAGS) -r ./tests/requirements.txt
 
 clean:
-	$(RM) -r $(CURRENT)/build $(TARGET) rplugin/python3/deoplete/ujson/build data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt
+	$(RM) -r "$(CURRENT)/build" "$(TARGET)" rplugin/python3/deoplete/ujson/build data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt
 
 .PHONY: test lint clean gen_json build
