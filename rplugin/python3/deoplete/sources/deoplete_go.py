@@ -206,7 +206,10 @@ class Source(Base):
         if self.goarch != '':
             env['GOARCH'] = self.goarch
 
-        args = [self.find_gocode_binary(), '-f=json']
+        gocode = self.find_gocode_binary()
+        if not gocode:
+            return []
+        args = [gocode, '-f=json']
         # basically, '-sock' option for mdempsky/gocode.
         # probably meaningless in nsf/gocode that already run the rpc server
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
