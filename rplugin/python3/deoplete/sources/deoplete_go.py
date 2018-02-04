@@ -229,14 +229,24 @@ class Source(Base):
             '\n'.join(buffer).encode()
         )
 
-        return loads(stdout_data.decode())
+        result = []
+        try:
+            result = loads(stdout_data.decode())
+        except Exception as e:
+            error(self.vim, 'gocode decode error')
+            error(self.vim, stdout_data.decode())
+        return result
 
     def get_cursor_offset(self, context):
         line = self.vim.current.window.cursor[0]
         column = context['complete_position']
-
-        return self.vim.call('line2byte', line) + \
-            charpos2bytepos('utf-8', context['input'][: column], column) - 1
+        count = self.vim.call('line2byte', line)
+        if self.vim.current.buffer.options['fileformat'] == 'dos':
+            # Note: line2byte() counts "\r\n" in DOS format.  It must be "\n"
+            # in gocode.
+            count -= line - 1
+        return count + charpos2bytepos(
+            'utf-8', context['input'][: column], column) - 1
 
     def parse_import_package(self, buffer):
         start = 0
