@@ -7,7 +7,7 @@ TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
-GO_STABLE_VERSION = 1.7.3
+GO_STABLE_VERSION = 1.10.1
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
 
