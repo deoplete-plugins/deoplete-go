@@ -7,14 +7,14 @@ TARGET = $(RPLUGIN_HOME)/deoplete/ujson.so
 
 GOCODE := $(shell which gocode)
 GO_VERSION = $(shell go version | awk '{print $$3}' | sed -e 's/go//')
-GO_STABLE_VERSION = 1.7.3
+GO_STABLE_VERSION = 1.10.1
 GOOS := $(shell go env GOOS)
 GOARCH := $(shell go env GOARCH)
 
 GIT := $(shell which git)
 PYTHON3 := $(shell which python3)
 DOCKER := $(shell which docker)
-DOKCER_IMAGE := zchee/deoplete-go:${GO_STABLE_VERSION}-linux_amd64
+DOCKER_IMAGE := zchee/deoplete-go:${GO_STABLE_VERSION}-linux_amd64
 
 PACKAGE ?= unsafe
 
@@ -50,13 +50,13 @@ gen_json: data/stdlib-$(GO_VERSION)_$(GOOS)_$(GOARCH).txt
 
 
 docker/build:
-	$(DOCKER) build -t $(DOKCER_IMAGE) .
+	$(DOCKER) build -t $(DOCKER_IMAGE) .
 
 docker/gen_stdlib: docker/build
-	$(DOCKER) run --rm $(DOKCER_IMAGE) cat /deoplete-go/data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt > ./data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt
+	$(DOCKER) run --rm $(DOCKER_IMAGE) cat /deoplete-go/data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt > ./data/stdlib-${GO_STABLE_VERSION}_linux_amd64.txt
 
 docker/gen_json: docker/gen_stdlib
-	$(DOCKER) run --rm $(DOKCER_IMAGE) > ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
+	$(DOCKER) run --rm $(DOCKER_IMAGE) > ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
 	tar xf ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
 	mv ./json_${GO_STABLE_VERSION}_linux_amd64.tar.gz ./data/json_${GO_STABLE_VERSION}_linux_amd64.tar.gz
 
