@@ -6,7 +6,7 @@ import subprocess
 from collections import OrderedDict
 
 from .base import Base
-from deoplete.util import charpos2bytepos, error, expand, getlines, load_external_module
+from deoplete.util import charpos2bytepos, expand, getlines, load_external_module
 
 load_external_module(__file__, 'sources/deoplete_go')
 from cgo import cgo
@@ -108,7 +108,7 @@ class Source(Base):
 
         try:
             if result[1][0]['class'] == 'PANIC':
-                error(self.vim, 'gocode panicked')
+                self.print_error('gocode panicked')
                 return []
 
             if self.sort_class:
@@ -233,8 +233,9 @@ class Source(Base):
         try:
             result = loads(stdout_data.decode())
         except Exception as e:
-            error(self.vim, 'gocode decode error')
-            error(self.vim, stdout_data.decode())
+            self.print_error('gocode decode error')
+            self.print_error(stdout_data.decode())
+            self.print_error(stderr_data.decode())
         return result
 
     def get_cursor_offset(self, context):
@@ -309,4 +310,4 @@ class Source(Base):
                 binary = os.path.join(p, path)
                 if is_exec(binary):
                     return binary
-        return error(self.vim, path + ' binary not found')
+        return self.print_error(path + ' binary not found')
