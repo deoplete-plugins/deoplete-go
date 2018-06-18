@@ -284,11 +284,8 @@ class Source(Base):
             return self.gocode_binary
 
         try:
-            if os.path.isfile(self.gocode_binary):
-                self.loaded_gocode_binary = True
-                return self.gocode_binary
-            else:
-                raise
+            self.loaded_gocode_binary = os.path.isfile(self.gocode_binary)
+            return self.gocode_binary
         except Exception:
             if platform.system().lower() == 'windows':
                 return self.find_binary_path('gocode.exe')
