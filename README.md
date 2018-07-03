@@ -8,21 +8,21 @@
 Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/nsf/gocode).
 
 ## Overview
-Asynchronous Go completion for Neovim.  
+Asynchronous Go completion for Neovim.
 Use,
 
 ### deoplete.nvim
 [Shougo/deoplete.nvim](https://github.com/Shougo/deoplete.nvim)
 
-Dark powered asynchronous completion framework for neovim.  
-Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source for each languages, and more.  
+Dark powered asynchronous completion framework for neovim.
+Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source for each languages, and more.
 The Nextgen word completion.
 
 ### gocode
 [nsf/gocode](https://github.com/nsf/gocode)
 
-An autocompletion daemon for the Go programming language.  
-Fastest, Context-sensitive, Server/Client architecture, Result caching.  
+An autocompletion daemon for the Go programming language.
+Fastest, Context-sensitive, Server/Client architecture, Result caching.
 The *de facto* standard completion engine.
 
 ---
@@ -30,7 +30,7 @@ The *de facto* standard completion engine.
 ## Required
 
 ### Neovim and neovim/python-client
-https://github.com/neovim/neovim  
+https://github.com/neovim/neovim
 https://github.com/neovim/python-client
 
 ### deoplete.nvim
@@ -51,7 +51,7 @@ See Neovim wiki.
 - [Building](https://github.com/neovim/neovim/wiki/Building-Neovim)
 
 ### 2. Install neovim/python-client
-Neovim remote client for python.  
+Neovim remote client for python.
 See https://github.com/neovim/python-client
 
 ```bash
@@ -66,8 +66,8 @@ go get -u github.com/nsf/gocode
 ```
 
 ### 4. Install plugin and Build ujson module
-`deoplete-go` using [esnme/ultrajson](https://github.com/esnme/ultrajson) json module.  
-It's Python bindings for C library. Need compiling.  
+`deoplete-go` using [esnme/ultrajson](https://github.com/esnme/ultrajson) json module.
+It's Python bindings for C library. Need compiling.
 So, If you use Plugin manager supported build process, set `make` commmand.
 
 ```vim
@@ -95,6 +95,7 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 | `g:deoplete#sources#go#sort_class`     | `[]`    | **Recommend** |
 | `g:deoplete#sources#go#cgo`            | `0`     | *Any*         |
 | `g:deoplete#sources#go#goos`           | `''`    | No            |
+| `g:deoplete#sources#go#source_importer`| `0`     | No            |
 
 ### `g:deoplete#sources#go#gocode_binary`
 #### `gocode` Binary
@@ -105,9 +106,9 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 | **Type**     | string                  |
 | **Example**  | `$GOPATH.'/bin/gocode'` |
 
-`deoplete-go` will directly call `gocode`. Not vim bypass due to the omnifunc.  
-By default (not set), Find the gocode binary in `$PATH` environment.  
-This setting is **Recommend**.  
+`deoplete-go` will directly call `gocode`. Not vim bypass due to the omnifunc.
+By default (not set), Find the gocode binary in `$PATH` environment.
+This setting is **Recommend**.
 If you set it, `deoplete-go` spared look for the binary. It will improve performance.
 
 Also, If you want to use a different from the first found `gocode` binary from `$PATH` then set:
@@ -124,7 +125,7 @@ let g:deoplete#sources#go#gocode_binary = '/path/to/gocode'
 | **Type**     | int |
 | **Example**  | `1` |
 
-Automatically insert dot (period) when you select `package` name in popup menu.  
+Automatically insert dot (period) when you select `package` name in popup menu.
 By default, no dot (period) is inserted after a package name.
 
 If you would prefer adding a period then set:
@@ -162,7 +163,7 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 | **Type**     | int   |
 | **Example**  | `1`   |
 
-Support pointer (`*`) match.  
+Support pointer (`*`) match.
 Example are bellow code. `|` is cursor.
 
 ```go
@@ -208,7 +209,7 @@ func main() {
 }
 ```
 
-Will return the `pid_t`, `malloc`, `free` and more.  
+Will return the `pid_t`, `malloc`, `free` and more.
 
 The real example uses libgit2.
 
@@ -247,7 +248,7 @@ Will return that completion list.
 
 ![cgo_libgit2](images/cgo_libgit2.png)
 
-Now support current buffer only.  
+Now support current buffer only.
 TODO: Support parses `.c`, `.h` file.
 
 ### `g:deoplete#sources#go#cgo#libclang_path`
@@ -259,7 +260,7 @@ TODO: Support parses `.c`, `.h` file.
 | **Type**     | string                         |
 | **Example**  | `/opt/llvm/lib/libclang.dylib` |
 
-libclang shared library path option.  
+libclang shared library path option.
 In darwin, `libclang.dylib`, In Linux, `libclang.so`.
 
 ### `g:deoplete#sources#go#cgo#std`
@@ -271,7 +272,7 @@ In darwin, `libclang.dylib`, In Linux, `libclang.so`.
 | **Type**     | string |
 | **Example**  | `c99`  |
 
-C language standard version option.  
+C language standard version option.
 If not set, deoplete-go uses `c11`(latest) version.
 
 ### `g:deoplete#sources#go#auto_goos`
@@ -290,6 +291,21 @@ while on `linux`), `CGO_ENABLED=0` will also be set.
 
 **Note:** There may be a 5-10 second delay if `gocode` needs to compile the
 platform-specific sources for the first time.
+
+### `g:deoplete#sources#go#source_importer`
+#### Enable source importer
+
+| **Default**  | `0` |
+|--------------|-----|
+| **Required** | No  |
+| **Type**     | int |
+| **Example**  | `1` |
+
+When enabled, deoplete-go can complete external packages.
+
+Note: It is for "mdempsky/gocode" only option.  And if it is enabled, the
+completion is slower.
+https://github.com/mdempsky/gocode
 
 ---
 

@@ -55,6 +55,8 @@ class Source(Base):
             vars.get('deoplete#sources#go#gocode_sock', '')
         self.cgo = \
             vars.get('deoplete#sources#go#cgo', False)
+        self.source_importer = \
+            vars.get('deoplete#sources#go#source_importer', False)
 
         self.loaded_gocode_binary = False
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
@@ -210,6 +212,8 @@ class Source(Base):
         if not gocode:
             return []
         args = [gocode, '-f=json']
+        if self.source_importer:
+            args.append('-source')
         # basically, '-sock' option for mdempsky/gocode.
         # probably meaningless in nsf/gocode that already run the rpc server
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:
