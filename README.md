@@ -5,7 +5,7 @@
 | **Travis CI** |[![Build Status](https://travis-ci.org/zchee/deoplete-go.svg?branch=master)](https://travis-ci.org/zchee/deoplete-go)|
 | **Gitter** |[![Join the chat at https://gitter.im/zchee/deoplete-go](https://badges.gitter.im/zchee/deoplete-go.svg)](https://gitter.im/zchee/deoplete-go?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)|
 
-Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/nsf/gocode).
+Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/mdempsky/gocode).
 
 ## Overview
 Asynchronous Go completion for Neovim.
@@ -15,11 +15,11 @@ Use,
 [Shougo/deoplete.nvim](https://github.com/Shougo/deoplete.nvim)
 
 Dark powered asynchronous completion framework for neovim.
-Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source for each languages, and more.
-The Nextgen word completion.
+Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source
+for each languages, and more.  The Nextgen word completion.
 
 ### gocode
-[nsf/gocode](https://github.com/nsf/gocode)
+[mdempsky/gocode](https://github.com/mdempsky/gocode)
 
 An autocompletion daemon for the Go programming language.
 Fastest, Context-sensitive, Server/Client architecture, Result caching.
@@ -29,15 +29,11 @@ The *de facto* standard completion engine.
 
 ## Required
 
-### Neovim and neovim/python-client
-https://github.com/neovim/neovim
-https://github.com/neovim/python-client
-
 ### deoplete.nvim
 https://github.com/Shougo/deoplete.nvim
 
 ### gocode
-https://github.com/nsf/gocode
+https://github.com/mdempsky/gocode
 
 ---
 
@@ -50,19 +46,13 @@ See Neovim wiki.
 - [Following HEAD](https://github.com/neovim/neovim/wiki/Following-HEAD)
 - [Building](https://github.com/neovim/neovim/wiki/Building-Neovim)
 
-### 2. Install neovim/python-client
-Neovim remote client for python.
-See https://github.com/neovim/python-client
-
-```bash
-pip2 install --upgrade neovim
-pip3 install --upgrade neovim
-```
+### 2. Install deoplete
+See https://github.com/Shougo/deoplete.nvim
 
 ### 3. Install latest of gocode
 
 ```bash
-go get -u github.com/nsf/gocode
+go get -u github.com/mdempsky/gocode
 ```
 
 ### 4. Install plugin and Build ujson module
