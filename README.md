@@ -8,13 +8,13 @@
 Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/mdempsky/gocode).
 
 ## Overview
-Asynchronous Go completion for Neovim.
+Asynchronous Go completion for Neovim/Vim8.
 Use,
 
 ### deoplete.nvim
 [Shougo/deoplete.nvim](https://github.com/Shougo/deoplete.nvim)
 
-Dark powered asynchronous completion framework for neovim.
+Dark powered asynchronous completion framework for neovim/Vim8.
 Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source
 for each languages, and more.  The Nextgen word completion.
 
@@ -39,8 +39,8 @@ https://github.com/mdempsky/gocode
 
 ## How to install
 
-### 1. Install Neovim
-See Neovim wiki.
+### 1. Install Neovim or Vim8
+For neovim, see Neovim wiki.
 
 - [Installing Neovim](https://github.com/neovim/neovim/wiki/Installing-Neovim)
 - [Following HEAD](https://github.com/neovim/neovim/wiki/Following-HEAD)
