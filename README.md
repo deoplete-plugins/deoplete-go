@@ -78,14 +78,15 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 ## Available Settings
 
-| Setting value                          | Default | Required      |
-|:---------------------------------------|:-------:|:-------------:|
-| `g:deoplete#sources#go#gocode_binary`  | `''`    | **Recommend** |
-| `g:deoplete#sources#go#package_dot`    | `0`     | No            |
-| `g:deoplete#sources#go#sort_class`     | `[]`    | **Recommend** |
-| `g:deoplete#sources#go#cgo`            | `0`     | *Any*         |
-| `g:deoplete#sources#go#goos`           | `''`    | No            |
-| `g:deoplete#sources#go#source_importer`| `0`     | No            |
+| Setting value                           | Default | Required      |
+|:---------------------------------------:|:-------:|:-------------:|
+| `g:deoplete#sources#go#gocode_binary`   | `''`    | **Recommend** |
+| `g:deoplete#sources#go#package_dot`     | `0`     | No            |
+| `g:deoplete#sources#go#sort_class`      | `[]`    | **Recommend** |
+| `g:deoplete#sources#go#cgo`             | `0`     | *Any*         |
+| `g:deoplete#sources#go#goos`            | `''`    | No            |
+| `g:deoplete#sources#go#source_importer` | `0`     | No            |
+| `g:deoplete#sources#go#builtin_objects` | `0`     | No            |
 
 ### `g:deoplete#sources#go#gocode_binary`
 #### `gocode` Binary
@@ -296,6 +297,17 @@ When enabled, deoplete-go can complete external packages.
 Note: It is for "mdempsky/gocode" only option.  And if it is enabled, the
 completion is slower.
 https://github.com/mdempsky/gocode
+
+### `g:deoplete#sources#go#builtin_objects`
+#### Propose builtin objects
+
+| **Default**  | `0` |
+|--------------|-----|
+| **Required** | No  |
+| **Type**     | int |
+| **Example**  | `1` |
+
+When enabled, deoplete-go can complete builtin objects.
 
 ---
 
