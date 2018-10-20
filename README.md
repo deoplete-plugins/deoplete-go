@@ -298,6 +298,9 @@ Note: It is for "mdempsky/gocode" only option.  And if it is enabled, the
 completion is slower.
 https://github.com/mdempsky/gocode
 
+It is deprecated option.  You should use the latest gocode.
+https://github.com/mdempsky/gocode/pull/71
+
 ### `g:deoplete#sources#go#builtin_objects`
 #### Propose builtin objects
 
