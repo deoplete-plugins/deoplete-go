@@ -59,6 +59,8 @@ class Source(Base):
             vars.get('deoplete#sources#go#source_importer', False)
         self.builtin_objects = \
             vars.get('deoplete#sources#go#builtin_objects', False)
+        self.unimported_packages = \
+            vars.get('deoplete#sources#go#unimported_packages', False)
 
         self.loaded_gocode_binary = False
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
@@ -218,6 +220,8 @@ class Source(Base):
             args.append('-source')
         if self.builtin_objects:
             args.append('-builtin')
+        if self.unimported_packages:
+            args.append('-unimported-packages')
         # basically, '-sock' option for mdempsky/gocode.
         # probably meaningless in nsf/gocode that already run the rpc server
         if self.sock != '' and self.sock in ['unix', 'tcp', 'none']:

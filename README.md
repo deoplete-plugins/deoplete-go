@@ -78,15 +78,16 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 ## Available Settings
 
-| Setting value                           | Default | Required      |
-|:---------------------------------------:|:-------:|:-------------:|
-| `g:deoplete#sources#go#gocode_binary`   | `''`    | **Recommend** |
-| `g:deoplete#sources#go#package_dot`     | `0`     | No            |
-| `g:deoplete#sources#go#sort_class`      | `[]`    | **Recommend** |
-| `g:deoplete#sources#go#cgo`             | `0`     | *Any*         |
-| `g:deoplete#sources#go#goos`            | `''`    | No            |
-| `g:deoplete#sources#go#source_importer` | `0`     | No            |
-| `g:deoplete#sources#go#builtin_objects` | `0`     | No            |
+| Setting value                               | Default | Required      |
+|:---------------------------------------:    |:-------:|:-------------:|
+| `g:deoplete#sources#go#gocode_binary`       | `''`    | **Recommend** |
+| `g:deoplete#sources#go#package_dot`         | `0`     | No            |
+| `g:deoplete#sources#go#sort_class`          | `[]`    | **Recommend** |
+| `g:deoplete#sources#go#cgo`                 | `0`     | *Any*         |
+| `g:deoplete#sources#go#goos`                | `''`    | No            |
+| `g:deoplete#sources#go#source_importer`     | `0`     | No            |
+| `g:deoplete#sources#go#builtin_objects`     | `0`     | No            |
+| `g:deoplete#sources#go#unimported_packages` | `0`     | No            |
 
 ### `g:deoplete#sources#go#gocode_binary`
 #### `gocode` Binary
@@ -311,6 +312,18 @@ https://github.com/mdempsky/gocode/pull/71
 | **Example**  | `1` |
 
 When enabled, deoplete-go can complete builtin objects.
+
+### `g:deoplete#sources#go#unimported_packages`
+#### Propose completions for unimported standard library packages
+
+| **Default**  | `0` |
+|--------------|-----|
+| **Required** | No  |
+| **Type**     | int |
+| **Example**  | `1` |
+
+When enabled, deoplete-go can complete standard library packages that are
+not explicitely imported yet.
 
 ---
 
