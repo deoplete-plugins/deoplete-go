@@ -55,10 +55,14 @@ class Source(Base):
             vars.get('deoplete#sources#go#gocode_sock', '')
         self.cgo = \
             vars.get('deoplete#sources#go#cgo', False)
-        self.source_importer = \
-            vars.get('deoplete#sources#go#source_importer', False)
         self.builtin_objects = \
             vars.get('deoplete#sources#go#builtin_objects', False)
+        self.use_cache = \
+            vars.get('deoplete#sources#go#cache', False)
+        self.fallback_to_source = \
+            vars.get('deoplete#sources#go#fallback_to_source', False)
+        self.source_importer = \
+            vars.get('deoplete#sources#go#source_importer', False)
         self.unimported_packages = \
             vars.get('deoplete#sources#go#unimported_packages', False)
 
@@ -216,10 +220,14 @@ class Source(Base):
         if not gocode:
             return []
         args = [gocode, '-f=json']
-        if self.source_importer:
-            args.append('-source')
         if self.builtin_objects:
             args.append('-builtin')
+        if self.use_cache:
+            args.append('-cache')
+        if self.fallback_to_source:
+            args.append('-fallback-to-source')
+        if self.source_importer:
+            args.append('-source')
         if self.unimported_packages:
             args.append('-unimported-packages')
         # basically, '-sock' option for mdempsky/gocode.
