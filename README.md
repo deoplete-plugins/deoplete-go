@@ -5,7 +5,7 @@
 | **Travis CI** |[![Build Status](https://travis-ci.org/zchee/deoplete-go.svg?branch=master)](https://travis-ci.org/zchee/deoplete-go)|
 | **Gitter** |[![Join the chat at https://gitter.im/zchee/deoplete-go](https://badges.gitter.im/zchee/deoplete-go.svg)](https://gitter.im/zchee/deoplete-go?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)|
 
-Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/mdempsky/gocode).
+Go source for [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) use [gocode](https://github.com/stamblerre/gocode).
 
 ## Overview
 Asynchronous Go completion for Neovim/Vim8.
@@ -19,7 +19,7 @@ Fastetst, Fully asynchronous, Nonblocking user interface, Customizable source
 for each languages, and more.  The Nextgen word completion.
 
 ### gocode
-[mdempsky/gocode](https://github.com/mdempsky/gocode)
+[stamblerre/gocode](https://github.com/stamblerre/gocode)
 
 An autocompletion daemon for the Go programming language.
 Fastest, Context-sensitive, Server/Client architecture, Result caching.
@@ -33,7 +33,7 @@ The *de facto* standard completion engine.
 https://github.com/Shougo/deoplete.nvim
 
 ### gocode
-https://github.com/mdempsky/gocode
+https://github.com/stamblerre/gocode
 
 ---
 
@@ -52,7 +52,7 @@ See https://github.com/Shougo/deoplete.nvim
 ### 3. Install latest of gocode
 
 ```bash
-go get -u github.com/mdempsky/gocode
+go get -u github.com/stamblerre/gocode
 ```
 
 ### 4. Install plugin and Build ujson module
@@ -294,10 +294,6 @@ platform-specific sources for the first time.
 | **Example**  | `1` |
 
 When enabled, deoplete-go can complete external packages.
-
-Note: It is for "mdempsky/gocode" only option.  And if it is enabled, the
-completion is slower.
-https://github.com/mdempsky/gocode
 
 It is deprecated option.  You should use the latest gocode.
 https://github.com/mdempsky/gocode/pull/71
