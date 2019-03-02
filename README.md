@@ -68,15 +68,15 @@ So, If you use Plugin manager supported build process, set `make` commmand.
 ```vim
 " dein.vim
 call dein#add('Shougo/deoplete.nvim')
-call dein#add('zchee/deoplete-go', {'build': 'make'})
+call dein#add('deoplete-plugins/deoplete-go', {'build': 'make'})
 
 " NeoBundle
 NeoBundle 'Shougo/deoplete.nvim'
-NeoBundle 'zchee/deoplete-go', {'build': {'unix': 'make'}}
+NeoBundle 'deoplete-plugins/deoplete-go', {'build': {'unix': 'make'}}
 
 " vim-plug
 Plug 'Shougo/deoplete.nvim'
-Plug 'zchee/deoplete-go', { 'do': 'make'}
+Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 ```
 
 ---
@@ -355,7 +355,7 @@ TODO:
 - [x] Parse included cgo (C, C++ language) headers on current buffer
   - `ctags` will be blocking `deoplete.nvim`
 - [x] Support static json caching
-  - See https://github.com/zchee/deoplete-go/pull/19
+  - See https://github.com/deoplete-plugins/deoplete-go/pull/19
 - [x] Support Go stdlib package `import "***"` name completion
   - This feature has been implemented in gocode. Thanks @nhooyr!
 - [x] Execute `gocode` binary instead of call vim function
