@@ -93,6 +93,7 @@ Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 | `g:deoplete#sources#go#source_importer`     | `0`     | No            |
 | `g:deoplete#sources#go#builtin_objects`     | `0`     | No            |
 | `g:deoplete#sources#go#unimported_packages` | `0`     | No            |
+| `g:deoplete#sources#go#fallback_to_source ` | `0`     | No            |
 
 ### `g:deoplete#sources#go#gocode_binary`
 #### `gocode` Binary
@@ -325,6 +326,18 @@ When enabled, deoplete-go can complete builtin objects.
 
 When enabled, deoplete-go can complete standard library packages that are
 not explicitely imported yet.
+
+### `g:deoplete#sources#go#fallback_to_source`
+#### Scan source files when a dependency is not found on the GOPATH
+
+| **Default**  | `0` |
+|--------------|-----|
+| **Required** | No  |
+| **Type**     | int |
+| **Example**  | `1` |
+
+When enabled, deoplete-go will try the source importer when it fails
+to find a dependency on the GOPATH.
 
 ---
 
