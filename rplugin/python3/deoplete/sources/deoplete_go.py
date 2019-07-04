@@ -18,9 +18,11 @@ try:
 except ImportError:
     from json import loads
 
+# from https://github.com/golang/go/blob/go1.13beta1/src/go/build/syslist.go
 known_goos = (
-    'appengine', 'android', 'darwin', 'dragonfly', 'freebsd', 'linux', 'nacl',
-    'netbsd', 'openbsd', 'plan9', 'solaris', 'windows')
+        'aix', 'android', 'appengine', 'darwin', 'dragonfly', 'freebsd', 'hurd', 'illumos', 'js',
+        'linux', 'nacl', 'netbsd', 'openbsd', 'plan9', 'solaris', 'windows', 'zos'
+        )
 
 
 class Source(Base):
