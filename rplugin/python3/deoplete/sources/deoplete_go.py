@@ -5,7 +5,7 @@ import subprocess
 
 from collections import OrderedDict
 
-from .base import Base
+from deoplete.base.source import Base
 from deoplete.util import charpos2bytepos, expand, getlines, load_external_module
 
 load_external_module(__file__, 'sources/deoplete_go')
