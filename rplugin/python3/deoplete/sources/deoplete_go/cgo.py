@@ -44,7 +44,7 @@ class cgo(object):
             chunk_spelling = chunk.spelling
 
             # ignore inline fake main(void), and '_' prefix function
-            if chunk_spelling == 'main' or chunk_spelling.find('_') is 0:
+            if chunk_spelling == 'main' or chunk_spelling.find('_') == 0:
                 return completion
 
             if chunk.isKindTypedText():
