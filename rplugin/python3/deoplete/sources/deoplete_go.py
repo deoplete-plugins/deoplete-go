@@ -39,32 +39,60 @@ class Source(Base):
     def on_init(self, context):
         vars = context['vars']
 
-        self.gocode_binary = \
-            expand(vars.get('deoplete#sources#go#gocode_binary', ''))
-        self.package_dot = \
-            vars.get('deoplete#sources#go#package_dot', False)
-        self.sort_class = \
-            vars.get('deoplete#sources#go#sort_class', [])
-        self.pointer = \
-            vars.get('deoplete#sources#go#pointer', False)
-        self.auto_goos = \
-            vars.get('deoplete#sources#go#auto_goos', False)
-        self.goos = \
-            vars.get('deoplete#sources#go#goos', '')
-        self.goarch = \
-            vars.get('deoplete#sources#go#goarch', '')
-        self.sock = \
-            vars.get('deoplete#sources#go#gocode_sock', '')
-        self.cgo = \
-            vars.get('deoplete#sources#go#cgo', False)
-        self.source_importer = \
-            vars.get('deoplete#sources#go#source_importer', False)
-        self.builtin_objects = \
-            vars.get('deoplete#sources#go#builtin_objects', False)
-        self.unimported_packages = \
-            vars.get('deoplete#sources#go#unimported_packages', False)
-        self.fallback_to_source = \
-            vars.get('deoplete#sources#go#fallback_to_source', False)
+        self.gocode_binary = ''
+        if 'deoplete#sources#go#gocode_binary' in vars:
+            self.gocode_binary = expand(
+                vars['deoplete#sources#go#gocode_binary'])
+
+        self.package_dot = False
+        if 'deoplete#sources#go#package_dot' in vars:
+            self.package_dot = vars['deoplete#sources#go#package_dot']
+
+        self.sort_class = []
+        if 'deoplete#sources#go#package_dot' in vars:
+            self.sort_class = vars['deoplete#sources#go#sort_class']
+
+        self.pointer = False
+        if 'deoplete#sources#go#pointer' in vars:
+            self.pointer = vars['deoplete#sources#go#pointer']
+
+        self.auto_goos = False
+        if 'deoplete#sources#go#auto_goos' in vars:
+            self.auto_goos = vars['deoplete#sources#go#auto_goos']
+
+        self.goos = ''
+        if 'deoplete#sources#go#goos' in vars:
+            self.goos = vars['deoplete#sources#go#goos']
+
+        self.goarch = ''
+        if 'deoplete#sources#go#goarch' in vars:
+            self.goarch = vars['deoplete#sources#go#goarch']
+
+        self.sock = ''
+        if 'deoplete#sources#go#sock' in vars:
+            self.sock = vars['deoplete#sources#go#sock']
+
+        self.cgo = False
+        if 'deoplete#sources#go#cgo' in vars:
+            self.cgo = vars['deoplete#sources#go#cgo']
+
+        self.source_importer = False
+        if 'deoplete#sources#go#source_importer' in vars:
+            self.source_importer = vars['deoplete#sources#go#source_importer']
+
+        self.builtin_objects = False
+        if 'deoplete#sources#go#builtin_objects' in vars:
+            self.builtin_objects = vars['deoplete#sources#go#builtin_objects']
+
+        self.unimported_packages = False
+        if 'deoplete#sources#go#unimported_packages' in vars:
+            self.unimported_packages = vars[
+                'deoplete#sources#go#unimported_packages']
+
+        self.fallback_to_source = False
+        if 'deoplete#sources#go#fallback_to_source' in vars:
+            self.fallback_to_source = vars[
+                'deoplete#sources#go#fallback_to_source']
 
         self.loaded_gocode_binary = False
         self.complete_pos = re.compile(r'\w*$|(?<=")[./\-\w]*$')
