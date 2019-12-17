@@ -76,6 +76,10 @@ class Source(Base):
         if 'deoplete#sources#go#cgo' in vars:
             self.cgo = vars['deoplete#sources#go#cgo']
 
+        self.cgo_only = False
+        if 'deoplete#sources#go#cgo_only' in vars:
+            self.cgo = vars['deoplete#sources#go#cgo_only']
+
         self.source_importer = False
         if 'deoplete#sources#go#source_importer' in vars:
             self.source_importer = vars['deoplete#sources#go#source_importer']
@@ -137,6 +141,9 @@ class Source(Base):
         # If enabled self.cgo, and matched self.cgo_complete_pattern pattern
         if self.cgo and self.cgo_complete_pattern.search(context['input']):
             return self.cgo_completion(getlines(self.vim))
+
+        if self.cgo_only:
+            return []
 
         bufname = self.vim.current.buffer.name
         if not os.path.isfile(bufname):
