@@ -78,7 +78,7 @@ class Source(Base):
 
         self.cgo_only = False
         if 'deoplete#sources#go#cgo_only' in vars:
-            self.cgo = vars['deoplete#sources#go#cgo_only']
+            self.cgo_only = vars['deoplete#sources#go#cgo_only']
 
         self.source_importer = False
         if 'deoplete#sources#go#source_importer' in vars:
