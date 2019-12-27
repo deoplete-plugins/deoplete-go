@@ -3,6 +3,7 @@ import queue
 
 try:
     import statistics
+
     stdev = statistics.stdev
     mean = statistics.mean
 except ImportError:
@@ -14,9 +15,11 @@ except ImportError:
 
 try:
     import time
+
     clock = time.perf_counter
 except Exception:
     import timeit
+
     clock = timeit.default_timer
 
 
@@ -25,7 +28,7 @@ class tfloat(float):
 
     def __str__(self):
         n = self * 1000
-        return '\x1b[%dm%f\x1b[mms' % (self.color, n)
+        return "\x1b[%dm%f\x1b[mms" % (self.color, n)
 
 
 def profile(func):
@@ -58,9 +61,7 @@ def profile(func):
             else:
                 n.color = 33
         samples.append(n)
-        self.info(
-            '\x1b[34m%s\x1b[m t = %s, \u00b5 = %s, \u03c3 = %s)', name, n, m, d
-        )
+        self.info("\x1b[34m%s\x1b[m t = %s, \u00b5 = %s, \u03c3 = %s)", name, n, m, d)
         return ret
 
     return wrapper
