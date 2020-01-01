@@ -5,46 +5,46 @@ from clang_index import Clang_Index
 
 
 class cgo(object):
-
     def get_inline_source(buffer):
         # TODO(zchee): very slow. about 100ms
 
         if 'import "C"' not in buffer:
-            return (0, '')
+            return (0, "")
 
         pos_import_c = list(buffer).index('import "C"')
         c_inline = buffer[:pos_import_c]
 
-        if c_inline[len(c_inline) - 1] == '*/':
-            comment_start = \
-                next(i for i, v in zip(range(len(c_inline) - 1, 0, -1),
-                                       reversed(c_inline)) if v == '/*')
-            c_inline = c_inline[comment_start + 1:len(c_inline) - 1]
+        if c_inline[len(c_inline) - 1] == "*/":
+            comment_start = next(
+                i
+                for i, v in zip(range(len(c_inline) - 1, 0, -1), reversed(c_inline))
+                if v == "/*"
+            )
+            c_inline = c_inline[comment_start + 1 : len(c_inline) - 1]
 
-        return (len(c_inline), '\n'.join(c_inline))
+        return (len(c_inline), "\n".join(c_inline))
 
     def get_pkgconfig(packages):
         out = []
-        pkgconfig = cgo.find_binary_path('pkg-config')
-        if pkgconfig != '':
+        pkgconfig = cgo.find_binary_path("pkg-config")
+        if pkgconfig != "":
             for pkg in packages:
-                flag = \
-                    os.popen(pkgconfig + " " + pkg + " --cflags --libs").read()
-                out += flag.rstrip().split(' ')
+                flag = os.popen(pkgconfig + " " + pkg + " --cflags --libs").read()
+                out += flag.rstrip().split(" ")
         return out
 
     def parse_candidates(result):
-        completion = {'dup': 1, 'word': ''}
+        completion = {"dup": 1, "word": ""}
         _type = ""
         word = ""
         placeholder = ""
-        sep = ' '
+        sep = " "
 
         for chunk in [x for x in result.string if x.spelling]:
             chunk_spelling = chunk.spelling
 
             # ignore inline fake main(void), and '_' prefix function
-            if chunk_spelling == 'main' or chunk_spelling.find('_') == 0:
+            if chunk_spelling == "main" or chunk_spelling.find("_") == 0:
                 return completion
 
             if chunk.isKindTypedText():
@@ -55,31 +55,36 @@ class cgo(object):
             else:
                 placeholder += chunk_spelling
 
-        completion['word'] = word
-        completion['abbr'] = completion['info'] = placeholder + sep + _type
+        completion["word"] = word
+        completion["abbr"] = completion["info"] = placeholder + sep + _type
 
-        completion['kind'] = \
-            ' '.join([(Clang_Index.kinds[result.cursorKind]
-                       if (result.cursorKind in Clang_Index.kinds) else
-                       str(result.cursorKind))])
+        completion["kind"] = " ".join(
+            [
+                (
+                    Clang_Index.kinds[result.cursorKind]
+                    if (result.cursorKind in Clang_Index.kinds)
+                    else str(result.cursorKind)
+                )
+            ]
+        )
 
         return completion
 
     def complete(index, cache, cgo_options, line_count, source):
-        cgo_pattern = r'#cgo (\S+): (.+)'
+        cgo_pattern = r"#cgo (\S+): (.+)"
         flags = set()
         for key, value in re.findall(cgo_pattern, source):
-            if key == 'pkg-config':
+            if key == "pkg-config":
                 for flag in cgo.get_pkgconfig(value.split()):
                     flags.add(flag)
             else:
-                if '${SRCDIR}' in key:
-                    key = key.replace('${SRCDIR}', './')
-                flags.add('%s=%s' % (key, value))
+                if "${SRCDIR}" in key:
+                    key = key.replace("${SRCDIR}", "./")
+                flags.add("%s=%s" % (key, value))
 
-        cgo_flags = ['-std', cgo_options['std']] + list(flags)
+        cgo_flags = ["-std", cgo_options["std"]] + list(flags)
 
-        fname = 'cgo_inline.c'
+        fname = "cgo_inline.c"
         main = """
     int main(void) {
     }
@@ -98,23 +103,22 @@ class cgo(object):
         options = 15
 
         # Index.parse(path, args=None, unsaved_files=None, options = 0)
-        tu = index.parse(
-            fname, cgo_flags, unsaved_files=files, options=options
-        )
+        tu = index.parse(fname, cgo_flags, unsaved_files=files, options=options)
 
         # TranslationUnit.codeComplete(path, line, column, ...)
         cr = tu.codeComplete(
-            fname, (line_count + 2),
+            fname,
+            (line_count + 2),
             1,
             unsaved_files=files,
             include_macros=True,
             include_code_patterns=True,
-            include_brief_comments=False
+            include_brief_comments=False,
         )
 
-        if cgo_options['sort_algo'] == 'priority':
+        if cgo_options["sort_algo"] == "priority":
             results = sorted(cr.results, key=cgo.get_priority)
-        elif cgo_options['sort_algo'] == 'alphabetical':
+        elif cgo_options["sort_algo"] == "alphabetical":
             results = sorted(cr.results, key=cgo.get_abbrevation)
         else:
             results = cr.results
@@ -143,43 +147,42 @@ class cgo(object):
         #  func C.GoBytes(unsafe.Pointer, C.int) []byte
         cache[source] = [
             {
-                'word': 'CString',
-                'abbr': 'CString(string) *C.char',
-                'info': 'CString(string) *C.char',
-                'kind': 'function',
-                'dup': 1
+                "word": "CString",
+                "abbr": "CString(string) *C.char",
+                "info": "CString(string) *C.char",
+                "kind": "function",
+                "dup": 1,
             },
             {
-                'word': 'CBytes',
-                'abbr': 'CBytes([]byte) unsafe.Pointer',
-                'info': 'CBytes([]byte) unsafe.Pointer',
-                'kind': 'function',
-                'dup': 1
+                "word": "CBytes",
+                "abbr": "CBytes([]byte) unsafe.Pointer",
+                "info": "CBytes([]byte) unsafe.Pointer",
+                "kind": "function",
+                "dup": 1,
             },
             {
-                'word': 'GoString',
-                'abbr': 'GoString(*C.char) string',
-                'info': 'GoString(*C.char) string',
-                'kind': 'function',
-                'dup': 1
+                "word": "GoString",
+                "abbr": "GoString(*C.char) string",
+                "info": "GoString(*C.char) string",
+                "kind": "function",
+                "dup": 1,
             },
             {
-                'word': 'GoStringN',
-                'abbr': 'GoStringN(*C.char, C.int) string',
-                'info': 'GoStringN(*C.char, C.int) string',
-                'kind': 'function',
-                'dup': 1
+                "word": "GoStringN",
+                "abbr": "GoStringN(*C.char, C.int) string",
+                "info": "GoStringN(*C.char, C.int) string",
+                "kind": "function",
+                "dup": 1,
             },
             {
-                'word': 'GoBytes',
-                'abbr': 'GoBytes(unsafe.Pointer, C.int) []byte',
-                'info': 'GoBytes(unsafe.Pointer, C.int) []byte',
-                'kind': 'function',
-                'dup': 1
+                "word": "GoBytes",
+                "abbr": "GoBytes(unsafe.Pointer, C.int) []byte",
+                "info": "GoBytes(unsafe.Pointer, C.int) []byte",
+                "kind": "function",
+                "dup": 1,
             },
         ]
-        cache[source] += \
-            list(map(cgo.parse_candidates, results))
+        cache[source] += list(map(cgo.parse_candidates, results))
         return cache[source]
 
     def get_priority(x):
@@ -195,7 +198,6 @@ class cgo(object):
         return cgo.get_abbr(x.string).lower()
 
     def find_binary_path(cmd):
-
         def is_exec(fpath):
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -209,4 +211,4 @@ class cgo(object):
                 binary = os.path.join(path, cmd)
                 if is_exec(binary):
                     return binary
-        return ''
+        return ""
