@@ -25,11 +25,6 @@ An autocompletion daemon for the Go programming language.
 Fastest, Context-sensitive, Server/Client architecture, Result caching.
 The *de facto* standard completion engine.
 
-Note: Another gocode is avaiable.
-It seems faster?
-
-https://github.com/visualfc/gocode
-
 ---
 
 ## Required
