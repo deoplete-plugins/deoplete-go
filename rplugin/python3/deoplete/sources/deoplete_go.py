@@ -62,7 +62,7 @@ class Source(Base):
             self.package_dot = vars["deoplete#sources#go#package_dot"]
 
         self.sort_class = []
-        if "deoplete#sources#go#package_dot" in vars:
+        if "deoplete#sources#go#sort_class" in vars:
             self.sort_class = vars["deoplete#sources#go#sort_class"]
 
         self.pointer = False
